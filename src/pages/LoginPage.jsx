@@ -76,9 +76,10 @@ export default function LoginPage() {
 
   // ── Carousel state ──────────────────────────────────────────────
   // startIdx = index of the leftmost photo currently shown (before slide)
-  const [startIdx, setStartIdx]   = useState(0);
-  const [slideKey, setSlideKey]   = useState(0);  // changing key re-mounts track → restarts animation
-  const [progKey,  setProgKey]    = useState(0);
+  const [startIdx,   setStartIdx]  = useState(0);
+  const [slideKey,   setSlideKey]  = useState(0);  // changing key re-mounts track → restarts animation
+  const [progKey,    setProgKey]   = useState(0);
+  const [labelsKey,  setLabelsKey] = useState(0);  // restarts label entrance animation after slide
   const slidingRef = useRef(false);
 
   // ── Login state ──────────────────────────────────────────────────
@@ -102,7 +103,8 @@ export default function LoginPage() {
 
     setTimeout(() => {
       setStartIdx(i => (i + 1) % N);
-      setProgKey(p => p + 1);
+      setProgKey(p  => p + 1);
+      setLabelsKey(l => l + 1); // fires label entrance animation after slide settles
       slidingRef.current = false;
     }, SLIDE_MS);
   }, []);
@@ -153,14 +155,24 @@ export default function LoginPage() {
                 alt={slide.name}
                 className="lp-photo-img"
               />
-              {/* Per-photo label — bottom of each panel */}
-              <div className="lp-photo-label">
-                <span className="lp-photo-cat">{slide.cat}</span>
-                <span className="lp-photo-name">{slide.name}</span>
-              </div>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* ══ Labels layer — above overlays, fixed to panel bottoms ══
+           key=labelsKey triggers the entrance animation after each slide  */}
+      <div key={labelsKey} className="lp-labels-layer">
+        {[0, 1, 2].map(i => {
+          const slide = SLIDES[(startIdx + i) % N];
+          return (
+            <div key={i} className="lp-label-slot" style={{ animationDelay: `${i * 0.07}s` }}>
+              <span className="lp-ldash" />
+              <span className="lp-lcat">{slide.cat}</span>
+              <span className="lp-lname">{slide.name}</span>
+            </div>
+          );
+        })}
       </div>
 
       {/* ══ Global overlays (darken edges, center slightly) ══ */}
@@ -362,27 +374,63 @@ export default function LoginPage() {
           border-left: 1px solid rgba(255,255,255,.06);
         }
 
-        /* ─ Per-photo bottom label ─ */
-        .lp-photo-label {
-          position: absolute; bottom: 0; left: 0; right: 0;
-          padding: 3rem 1.1rem 1.1rem;
-          background: linear-gradient(to top, rgba(0,0,0,.82) 0%, transparent 100%);
-          display: flex; flex-direction: column; gap: .22rem;
+        /* ─ Labels layer — sits above all overlays, below card ─ */
+        .lp-labels-layer {
+          position: absolute;
+          bottom: 0; left: 0; right: 0;
+          z-index: 18;          /* above overlays (z5), below card (z30) */
+          display: flex;
           pointer-events: none;
         }
-        .lp-photo-cat {
-          font-size: 8px; font-weight: 700;
-          letter-spacing: .32em; text-transform: uppercase;
-          color: rgba(255,255,255,.45);
+        /* Hidden on mobile/tablet — only on desktop 3-panel view */
+        @media (max-width: 1023px) { .lp-labels-layer { display: none; } }
+
+        /* Each slot aligns with its photo panel */
+        .lp-label-slot {
+          flex: 0 0 calc(100vw / 3);
+          padding: 4.5rem 1.4rem 1.5rem;
+          background: linear-gradient(to top,
+            rgba(0,0,0,.88) 0%,
+            rgba(0,0,0,.55) 40%,
+            transparent 100%
+          );
+          display: flex;
+          flex-direction: column;
+          gap: .28rem;
+          /* Entrance: slides up from bottom + fades in */
+          animation: lp-label-up .6s cubic-bezier(.16,1,.3,1) both;
         }
-        .lp-photo-name {
-          font-size: 11px; font-weight: 800;
-          letter-spacing: .1em; text-transform: uppercase;
-          color: rgba(255,255,255,.88);
+        @keyframes lp-label-up {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-        /* Hide labels on mobile (too cramped with login card) */
-        @media (max-width: 639px) {
-          .lp-photo-label { display: none; }
+
+        /* Accent dash — matches video's coloured line */
+        .lp-ldash {
+          display: block;
+          width: 28px; height: 2px;
+          background: linear-gradient(to right, #f43f5e, #e879f9);
+          border-radius: 2px;
+          margin-bottom: .45rem;
+        }
+
+        /* Category text */
+        .lp-lcat {
+          font-size: 9px; font-weight: 700;
+          letter-spacing: .36em; text-transform: uppercase;
+          color: rgba(255,255,255,.50);
+          line-height: 1;
+        }
+
+        /* Big bold name — like the video's large location text */
+        .lp-lname {
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: clamp(1.05rem, 1.6vw, 1.45rem);
+          font-weight: 700;
+          letter-spacing: .04em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,.95);
+          line-height: 1.1;
         }
 
         /* ─ Global overlays ─ */
