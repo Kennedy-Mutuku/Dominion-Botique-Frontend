@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { User, Lock, Eye, EyeOff, ArrowRight, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo bq.png';
+import dominionLogo from '../assets/dominion softwares main logo.png';
 
 // ── All boutique photos ──────────────────────────────────────────────
 import i_dera1     from '../assets/dera1.jpg';
@@ -314,6 +315,16 @@ export default function LoginPage() {
             ))}
           </div>
         </div>
+
+        {/* ④ Powered By — bottom of right panel */}
+        <div className="lp-powered">
+          <a href="https://dominionsoftwares.org/" target="_blank" rel="noopener noreferrer" className="lp-powered-link">
+            <img src={dominionLogo} alt="Dominion Softwares" className="lp-powered-logo" />
+            <span>Dominion Softwares</span>
+          </a>
+          <span className="lp-powered-sep">·</span>
+          <span className="lp-powered-tel">0740881485</span>
+        </div>
       </div>
 
       {/* ══════════════════════ MOBILE / TABLET (<1024px) ══════════════ */}
@@ -423,6 +434,16 @@ export default function LoginPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Mobile Powered By */}
+        <div className="lp-powered lp-powered-mob">
+          <a href="https://dominionsoftwares.org/" target="_blank" rel="noopener noreferrer" className="lp-powered-link">
+            <img src={dominionLogo} alt="Dominion Softwares" className="lp-powered-logo" />
+            <span>Dominion Softwares</span>
+          </a>
+          <span className="lp-powered-sep">·</span>
+          <span className="lp-powered-tel">0740881485</span>
         </div>
       </div>
 
@@ -818,16 +839,19 @@ export default function LoginPage() {
           padding: 2.5rem 1.5rem .75rem;
         }
         .lp-mob-logo {
-          height: 44px; width: auto;
-          filter: brightness(0) invert(1); opacity: .82; margin-bottom: .5rem;
+          height: 52px; width: auto;
+          filter: invert(1) drop-shadow(0 0 10px rgba(244,63,94,.45));
+          margin-bottom: .5rem;
         }
         .lp-mob-rule {
           display: flex; align-items: center; gap: .35rem; margin-bottom: .35rem;
         }
         .lp-mob-title {
-          font-family: Georgia, serif; font-size: 1.1rem; font-weight: 300;
+          font-family: 'Cinzel', Georgia, serif; font-size: 1.15rem; font-weight: 700;
           letter-spacing: .22em; text-transform: uppercase;
-          color: rgba(255,255,255,.90);
+          background: linear-gradient(135deg, #fff 0%, #fda4af 60%, #e879f9 100%);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
 
         /* Mobile card */
@@ -840,6 +864,37 @@ export default function LoginPage() {
           backdrop-filter: blur(28px);
           -webkit-backdrop-filter: blur(28px);
           background: rgba(4,4,10,.65) !important;
+        }
+
+        /* Powered By footer */
+        .lp-powered {
+          flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center;
+          gap: .55rem; flex-wrap: wrap;
+          padding: .7rem 1rem .9rem;
+          border-top: 1px solid rgba(255,255,255,.05);
+        }
+        .lp-powered-link {
+          display: inline-flex; align-items: center; gap: .45rem;
+          font-size: 8.5px; font-weight: 800; letter-spacing: .32em;
+          text-transform: uppercase; color: rgba(255,255,255,.65);
+          text-decoration: none; transition: color .2s;
+        }
+        .lp-powered-link:hover { color: #fb7185; }
+        .lp-powered-logo {
+          height: 16px; width: auto;
+          filter: brightness(0) invert(1); opacity: .75;
+        }
+        .lp-powered-sep { color: rgba(255,255,255,.18); font-size: 10px; }
+        .lp-powered-tel {
+          font-size: 8.5px; font-weight: 700; letter-spacing: .28em;
+          text-transform: uppercase; color: rgba(255,255,255,.38);
+        }
+        /* Mobile powered by — sits above the dark overlay */
+        .lp-powered-mob {
+          position: relative; z-index: 10;
+          border-top: 1px solid rgba(255,255,255,.08);
+          background: rgba(0,0,0,.45); backdrop-filter: blur(12px);
         }
 
         /* Mobile thumb strip */
