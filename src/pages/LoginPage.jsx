@@ -315,12 +315,10 @@ export default function LoginPage() {
 
         {/* ④ Powered By — bottom of right panel */}
         <div className="lp-powered">
-          <a href="https://dominionsoftwares.org/" target="_blank" rel="noopener noreferrer" className="lp-powered-link">
+          <a href="tel:0740881485" className="lp-powered-link hover:text-blue-500 transition-colors">
             <img src={dominionLogo} alt="Dominion Softwares" className="lp-powered-logo" />
-            <span>Dominion Softwares</span>
+            <span>Powered by Dominion Softwares</span>
           </a>
-          <span className="lp-powered-sep">·</span>
-          <span className="lp-powered-tel">0740881485</span>
         </div>
       </div>
 
@@ -433,12 +431,10 @@ export default function LoginPage() {
 
         {/* Mobile Powered By */}
         <div className="lp-powered lp-powered-mob">
-          <a href="https://dominionsoftwares.org/" target="_blank" rel="noopener noreferrer" className="lp-powered-link">
+          <a href="tel:0740881485" className="lp-powered-link hover:text-blue-400 transition-colors">
             <img src={dominionLogo} alt="Dominion Softwares" className="lp-powered-logo" />
-            <span>Dominion Softwares</span>
+            <span>Powered by Dominion Softwares</span>
           </a>
-          <span className="lp-powered-sep">·</span>
-          <span className="lp-powered-tel">0740881485</span>
         </div>
       </div>
 
@@ -715,23 +711,23 @@ export default function LoginPage() {
         }
         .lp-iw { position:relative; display:flex; align-items:center; }
         .lp-ii {
-          position:absolute; left:.88rem; color:#888888;
+          position:absolute; left:.88rem; color:#64748b;
           pointer-events:none; transition:color .2s; flex-shrink:0;
         }
         .lp-iw:focus-within .lp-ii { color:#f43f5e; }
         .lp-i {
           width:100%; padding:1rem 1rem 1rem 2.8rem;
-          background:#ffffff; border:1px solid #e5e5e5;
+          background:#ffffff; border:1.5px solid #cbd5e1;
           border-radius:.75rem; color:#111111; font-size:.95rem; font-weight:500; outline:none;
           transition:border-color .2s, box-shadow .2s;
         }
-        .lp-i::placeholder { color:#aaaaaa; font-weight:400; }
+        .lp-i::placeholder { color:#64748b; font-weight:500; }
         .lp-i:focus {
           border-color:#111111;
           box-shadow:0 0 0 1px #111111;
         }
         .lp-eye {
-          position:absolute; right:1rem; color:#888888;
+          position:absolute; right:1rem; color:#64748b;
           background:none; border:none; cursor:pointer;
           display:flex; align-items:center; transition:color .2s; padding:0;
         }
