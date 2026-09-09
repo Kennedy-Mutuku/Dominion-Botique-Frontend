@@ -655,30 +655,43 @@ export default function LoginPage() {
         /* ── Login card (shared desktop + mobile) ── */
         .lp-card {
           width: 100%;
-          background: rgba(255,255,255,.04);
-          border: 1px solid rgba(255,255,255,.08);
-          border-radius: 1.1rem;
-          padding: 1.6rem 1.5rem;
-          box-shadow: 0 0 0 1px rgba(255,255,255,.025) inset, 0 20px 50px rgba(0,0,0,.5);
+          background: rgba(8,8,18,.82);
+          border: 1px solid rgba(255,255,255,.09);
+          border-radius: 1.4rem;
+          padding: 2rem 1.8rem 1.6rem;
+          box-shadow:
+            0 0 0 1px rgba(244,63,94,.08) inset,
+            0 8px 60px rgba(0,0,0,.7),
+            0 0 40px rgba(244,63,94,.06);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
         }
-        .lp-ch { margin-bottom: 1.3rem; }
+        .lp-ch { margin-bottom: 1.6rem; text-align: center; }
         .lp-eyebrow {
-          font-size: 8px; font-weight: 700; letter-spacing: .44em;
-          text-transform: uppercase; color: #f43f5e; margin-bottom: .3rem;
+          font-size: 8px; font-weight: 700; letter-spacing: .5em;
+          text-transform: uppercase;
+          background: linear-gradient(to right, #f43f5e, #e879f9);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+          background-clip: text;
+          margin-bottom: .55rem; display: block;
         }
         .lp-ctitle {
-          font-family: Georgia, serif; font-size: 1.35rem;
-          font-weight: 300; letter-spacing: .04em;
-          color: rgba(255,255,255,.92); margin-bottom: .25rem;
+          font-family: Georgia, serif; font-size: 1.7rem;
+          font-weight: 300; letter-spacing: .06em;
+          color: rgba(255,255,255,.95); margin-bottom: .35rem;
         }
-        .lp-csub { font-size: 11px; color: rgba(255,255,255,.24); }
-        .lp-form { display:flex; flex-direction:column; gap:.78rem; }
+        .lp-csub {
+          font-size: 11px; color: rgba(255,255,255,.28);
+          letter-spacing: .04em;
+        }
+        .lp-form { display:flex; flex-direction:column; gap:.85rem; }
         .lp-field { display:flex; flex-direction:column; }
         .lp-field-in { animation: lp-field-in .4s cubic-bezier(.16,1,.3,1); }
         @keyframes lp-field-in { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
         .lp-lbl {
-          font-size: 8px; font-weight:700; letter-spacing:.34em;
-          text-transform:uppercase; color:rgba(255,255,255,.28); margin-bottom:.4rem;
+          font-size: 8px; font-weight:700; letter-spacing:.38em;
+          text-transform:uppercase; color:rgba(255,255,255,.30);
+          margin-bottom:.45rem; text-align: center;
         }
         .lp-iw { position:relative; display:flex; align-items:center; }
         .lp-ii {
@@ -726,21 +739,22 @@ export default function LoginPage() {
         }
         .lp-ed { display:inline-block; width:4px; height:4px; background:#f43f5e; border-radius:50%; flex-shrink:0; }
         .lp-btn {
-          display:flex; align-items:center; justify-content:center; gap:.42rem;
-          width:100%; padding:.8rem 1rem;
+          display:flex; align-items:center; justify-content:center; gap:.5rem;
+          width:100%; padding:.9rem 1rem;
           background:linear-gradient(135deg,#f43f5e 0%,#c026d3 100%);
-          color:#fff; font-size:10px; font-weight:700; letter-spacing:.24em;
-          text-transform:uppercase; border:none; border-radius:.72rem; cursor:pointer;
-          margin-top:.08rem; box-shadow:0 8px 26px rgba(244,63,94,.28);
+          color:#fff; font-size:10px; font-weight:800; letter-spacing:.32em;
+          text-transform:uppercase; border:none; border-radius:.9rem; cursor:pointer;
+          margin-top:.3rem;
+          box-shadow: 0 8px 26px rgba(244,63,94,.32), 0 0 0 1px rgba(255,255,255,.06) inset;
           transition:transform .2s, box-shadow .2s, filter .2s;
         }
-        .lp-btn:hover { transform:translateY(-2px); box-shadow:0 14px 36px rgba(244,63,94,.46); filter:brightness(1.08); }
+        .lp-btn:hover { transform:translateY(-2px); box-shadow:0 16px 40px rgba(244,63,94,.50); filter:brightness(1.1); }
         .lp-btn:active { transform:scale(.97); }
         .lp-cf {
-          margin-top:1.1rem; padding-top:.9rem;
+          margin-top:1.2rem; padding-top:1rem;
           border-top:1px solid rgba(255,255,255,.05); text-align:center;
-          font-size:8px; letter-spacing:.2em; text-transform:uppercase;
-          color:rgba(255,255,255,.12);
+          font-size:8px; letter-spacing:.28em; text-transform:uppercase;
+          color:rgba(255,255,255,.14);
         }
         @keyframes lp-shake {
           0%,100%{transform:translateX(0)} 18%{transform:translateX(-8px)}
