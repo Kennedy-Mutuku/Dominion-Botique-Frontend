@@ -133,7 +133,7 @@ const StaffDashboard = () => {
           <header className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex flex-col">
               <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">New Sale Recording</h1>
-              <p className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.2em] mt-1">Nyakoe Retail Interface</p>
+              <p className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.2em] mt-1">Nyakoe Fassions Retail Interface</p>
             </div>
           </header>
 

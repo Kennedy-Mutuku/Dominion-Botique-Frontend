@@ -26,7 +26,7 @@ const Header = () => {
 
         {/* Title */}
         <h1 className="text-xl md:text-2xl font-medium serif-font text-slate-900 tracking-[0.2em] md:tracking-[0.25em] mb-1.5 text-center uppercase leading-none">
-          Lucy Collections
+          Nyakoe Fassions
         </h1>
         
         {/* Subtitle */}

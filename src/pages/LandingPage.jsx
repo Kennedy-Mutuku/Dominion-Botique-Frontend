@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowDownLeft, ArrowUpRight, Activity, Package, TrendingUp, TrendingDown } from 'lucide-react';
 import Header from '../components/Header';
 import VideoBackground from '../components/VideoBackground';
+import dominionLogo from '../assets/dominion softwares main logo.png';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -132,10 +133,21 @@ const LandingPage = () => {
           </div>
           
           {/* Footer */}
-          <footer className="absolute bottom-4 left-0 right-0 text-center z-20 pointer-events-none w-full">
-            <p className="text-[10px] md:text-xs uppercase tracking-widest text-white/40 font-medium">
-              Designed by <span className="font-bold text-white/70">Dominion Softwares</span> <span className="mx-2 opacity-50">|</span> Tel: 0740881485
-            </p>
+          <footer className="absolute bottom-3 md:bottom-4 left-0 right-0 z-20 px-4">
+            <div className="mx-auto w-fit max-w-full flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[10px] md:text-xs uppercase tracking-widest bg-black/50 backdrop-blur-md border border-white/10 rounded-full px-4 py-2 shadow-lg">
+              <span className="text-white/80 font-semibold pointer-events-none">Powered By</span>
+              <a
+                href="https://dominionsoftwares.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 font-bold text-white hover:text-rose-300 transition-colors"
+              >
+                <img src={dominionLogo} alt="Dominion Softwares" className="h-4 w-auto" />
+                Dominion Softwares
+              </a>
+              <span className="text-white/30 pointer-events-none hidden sm:inline">|</span>
+              <span className="text-white/80 font-semibold pointer-events-none">Tel: 0740881485</span>
+            </div>
           </footer>
         </section>
 
