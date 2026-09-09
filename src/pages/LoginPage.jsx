@@ -848,6 +848,14 @@ export default function LoginPage() {
           backdrop-filter: blur(28px);
           -webkit-backdrop-filter: blur(28px);
           background: rgba(4,4,10,.65) !important;
+          border-color: rgba(255,255,255,0.15) !important;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
+        }
+        .lp-mob-card .lp-ctitle {
+          color: #ffffff !important;
+        }
+        .lp-mob-card .lp-lbl {
+          color: rgba(255,255,255,0.7) !important;
         }
 
         /* Powered By footer */

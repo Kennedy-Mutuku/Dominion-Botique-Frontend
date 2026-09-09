@@ -408,6 +408,16 @@ const AdminDashboard = () => {
                 {link.label}
               </button>
             ))}
+            
+            <div className="border-t border-slate-100 mt-1 mb-1"></div>
+            
+            <button
+              onClick={handleLogout}
+              className="w-full text-left px-4 py-2.5 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-colors flex items-center gap-2"
+            >
+              <LogOut size={14} />
+              Sign Out
+            </button>
           </div>
         )}
       </header>
