@@ -4,10 +4,11 @@ import { useAuth } from '../context/AuthContext';
 import {
   TrendingUp, TrendingDown, Package, ShoppingCart, DollarSign,
   BarChart2, LogOut, Calendar, RefreshCw, LayoutDashboard, Users,
-  FileText, Scissors, Archive, ArrowRightLeft, PieChart as PieChartIcon
+  FileText, Scissors, Archive, ArrowRightLeft, PieChart as PieChartIcon,
+  Search
 } from 'lucide-react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, Legend
 } from 'recharts';
 import logo from '../assets/logo bq.png';
@@ -25,14 +26,12 @@ const AdminDashboard = () => {
   const location = useLocation();
   const { logout } = useAuth();
 
-  const today = new Date().toISOString().split('T')[0];
-  const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-    .toISOString().split('T')[0];
-
-  const [fromDate, setFromDate] = useState(firstDay);
-  const [toDate, setToDate] = useState(today);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
   const [stock, setStock] = useState([]);
   const [sales, setSales] = useState([]);
+  const [salesSearch, setSalesSearch] = useState('');
+  const [stockSearch, setStockSearch] = useState('');
 
   const loadData = useCallback(() => {
     const s = localStorage.getItem('lucy_stock');
@@ -59,8 +58,12 @@ const AdminDashboard = () => {
     navigate('/login');
   };
 
-  // Filtered sales by date range
-  const filteredSales = sales.filter(s => s.date >= fromDate && s.date <= toDate);
+  // Filtered sales by date range (if no date is set, show all)
+  const filteredSales = sales.filter(s => {
+    const afterFrom = fromDate ? s.date >= fromDate : true;
+    const beforeTo = toDate ? s.date <= toDate : true;
+    return afterFrom && beforeTo;
+  });
 
   // Summary metrics
   const totalRevenue = filteredSales.reduce((sum, s) => sum + (s.soldPrice || 0), 0);
@@ -92,11 +95,32 @@ const AdminDashboard = () => {
     .slice(0, 5)
     .map(([name, revenue]) => ({ name, revenue }));
 
-  // Recent sales newest first
+  // Recent sales newest first, with search filter
   const recentSales = [...filteredSales].sort((a, b) => {
     const da = `${a.date}${a.time || ''}`;
     const db = `${b.date}${b.time || ''}`;
     return db.localeCompare(da);
+  }).filter(s => {
+    if (!salesSearch) return true;
+    const term = salesSearch.toLowerCase();
+    const name = (s.name || s.productName || '').toLowerCase();
+    const date = (s.date || '').toLowerCase();
+    const time = (s.time || '').toLowerCase();
+    const price = (s.soldPrice || '').toString();
+    const profit = (s.profit || '').toString();
+    return name.includes(term) || date.includes(term) || time.includes(term) || price.includes(term) || profit.includes(term);
+  });
+
+  const displayStock = stock.filter(item => {
+    if (!stockSearch) return true;
+    const term = stockSearch.toLowerCase();
+    const name = (item.name || item.productName || '').toLowerCase();
+    const date = (item.date || '').toLowerCase();
+    const time = (item.time || '').toLowerCase();
+    const buy = (item.buyingPrice || '').toString();
+    const sell = (item.price || '').toString();
+    const qty = (item.quantity || '').toString();
+    return name.includes(term) || date.includes(term) || time.includes(term) || buy.includes(term) || sell.includes(term) || qty.includes(term);
   });
 
   const profitPositive = totalProfit >= 0;
@@ -216,38 +240,28 @@ const AdminDashboard = () => {
 
           <div className="grid lg:grid-cols-3 gap-6 mb-6">
             
-            {/* Sales & Profit Trend (Area Chart) */}
+            {/* Profit & Loss Trend */}
             <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
               <h3 className="text-sm font-bold text-slate-800 mb-6 flex items-center gap-2">
                 <BarChart2 size={18} className="text-blue-500" />
-                Sales & Profit Trend
+                Profit & Loss Trend
               </h3>
               {trendData.length === 0 ? (
                 <div className="h-[280px] flex items-center justify-center text-slate-400 text-sm bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                  No sales in this date range
+                  No data in this date range
                 </div>
               ) : (
                 <div className="h-[280px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={trendData}>
-                      <defs>
-                        <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                        </linearGradient>
-                        <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
-                          <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
+                    <LineChart data={trendData.map(d => ({ ...d, profit: d.profit, loss: d.revenue - d.profit }))}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                       <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }} dy={10} />
                       <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }} dx={-10} tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
                       <Tooltip {...tooltipStyle} formatter={(v, name) => [`KSh ${v.toLocaleString()}`, name]} />
                       <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: 500, paddingTop: '10px' }} />
-                      <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
-                      <Area type="monotone" dataKey="profit" name="Profit" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorProfit)" />
-                    </AreaChart>
+                      <Line type="monotone" dataKey="profit" name="Profit" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="loss" name="Loss" stroke="#ef4444" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                    </LineChart>
                   </ResponsiveContainer>
                 </div>
               )}
@@ -293,8 +307,18 @@ const AdminDashboard = () => {
             
             {/* Recent Sales Table */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-              <div className="px-6 py-5 border-b border-slate-100 bg-slate-50">
+              <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                 <h3 className="text-sm font-bold text-slate-800">Recent Sales</h3>
+                <div className="relative">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search sales..."
+                    value={salesSearch}
+                    onChange={(e) => setSalesSearch(e.target.value)}
+                    className="pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm w-48 transition-all"
+                  />
+                </div>
               </div>
               {recentSales.length === 0 ? (
                 <div className="p-10 text-center text-slate-400 text-sm">No sales in this date range</div>
@@ -303,9 +327,10 @@ const AdminDashboard = () => {
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr>
-                        <th className="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Product</th>
-                        <th className="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-right">Price</th>
-                        <th className="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-right">Profit</th>
+                        <th className="pl-4 pr-2 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 w-8">#</th>
+                        <th className="px-2 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Product & Time</th>
+                        <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-right">Price</th>
+                        <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-right">Profit</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -313,17 +338,21 @@ const AdminDashboard = () => {
                         const profit = sale.profit || 0;
                         const name = sale.name || sale.productName || 'Unknown';
                         const profitPos = profit >= 0;
+                        const timeStr = sale.time ? ` • ${sale.time}` : '';
                         return (
                           <tr key={i} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="px-4 py-3">
-                              <p className="text-sm font-semibold text-slate-700 truncate max-w-[180px]">{name}</p>
-                              <p className="text-[10px] font-medium text-slate-400 mt-0.5">{sale.date}</p>
+                            <td className="pl-4 pr-2 py-1.5">
+                              <span className="text-[10px] font-black text-slate-300">{(i + 1).toString().padStart(2, '0')}</span>
                             </td>
-                            <td className="px-4 py-3 text-right">
-                              <p className="text-sm font-bold text-slate-800">KSh {(sale.soldPrice || 0).toLocaleString()}</p>
+                            <td className="px-2 py-1.5">
+                              <p className="text-[13px] font-semibold text-slate-700 truncate max-w-[160px] leading-tight">{name}</p>
+                              <p className="text-[9px] font-medium text-slate-400 mt-0.5 tracking-wide">{sale.date}{timeStr}</p>
                             </td>
-                            <td className="px-4 py-3 text-right">
-                              <span className={`text-[11px] font-bold px-2 py-1 rounded-md ${profitPos ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                            <td className="px-4 py-1.5 text-right">
+                              <p className="text-[12px] font-bold text-slate-800">KSh {(sale.soldPrice || 0).toLocaleString()}</p>
+                            </td>
+                            <td className="px-4 py-1.5 text-right">
+                              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${profitPos ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                                 {profitPos ? '+' : ''}KSh {Math.abs(profit).toLocaleString()}
                               </span>
                             </td>
@@ -338,8 +367,18 @@ const AdminDashboard = () => {
 
             {/* Current Stock Table */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-              <div className="px-6 py-5 border-b border-slate-100 bg-slate-50">
+              <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                 <h3 className="text-sm font-bold text-slate-800">Current Stock</h3>
+                <div className="relative">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search stock..."
+                    value={stockSearch}
+                    onChange={(e) => setStockSearch(e.target.value)}
+                    className="pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm w-48 transition-all"
+                  />
+                </div>
               </div>
               {stock.length === 0 ? (
                 <div className="p-10 text-center text-slate-400 text-sm">No stock added yet</div>
@@ -348,27 +387,34 @@ const AdminDashboard = () => {
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr>
-                        <th className="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Product</th>
-                        <th className="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-right">Pricing</th>
-                        <th className="px-4 py-3 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-center">Qty</th>
+                        <th className="pl-4 pr-2 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 w-8">#</th>
+                        <th className="px-2 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Product & Time</th>
+                        <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-right">Pricing</th>
+                        <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-center">Qty</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {stock.map((item, i) => {
+                      {displayStock.map((item, i) => {
                         const qty = item.quantity || 0;
                         const qtyColor = qty >= 5 ? 'text-emerald-600 bg-emerald-50' : qty >= 1 ? 'text-amber-600 bg-amber-50' : 'text-rose-600 bg-rose-50';
                         const name = item.name || item.productName || 'Unknown';
+                        const timeStr = item.time ? ` • ${item.time}` : '';
+                        const dateStr = item.date || 'Unknown Date';
                         return (
                           <tr key={i} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="px-4 py-3">
-                              <p className="text-sm font-semibold text-slate-700 truncate max-w-[180px]">{name}</p>
+                            <td className="pl-4 pr-2 py-1.5">
+                              <span className="text-[10px] font-black text-slate-300">{(i + 1).toString().padStart(2, '0')}</span>
                             </td>
-                            <td className="px-4 py-3 text-right">
-                              <p className="text-[11px] font-semibold text-slate-500">Buy: KSh {(item.buyingPrice || 0).toLocaleString()}</p>
-                              <p className="text-xs font-bold text-slate-800 mt-0.5">Sell: KSh {(item.price || 0).toLocaleString()}</p>
+                            <td className="px-2 py-1.5">
+                              <p className="text-[13px] font-semibold text-slate-700 truncate max-w-[160px] leading-tight">{name}</p>
+                              <p className="text-[9px] font-medium text-slate-400 mt-0.5 tracking-wide">{dateStr}{timeStr}</p>
                             </td>
-                            <td className="px-4 py-3 text-center">
-                              <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-black ${qtyColor}`}>
+                            <td className="px-4 py-1.5 text-right">
+                              <p className="text-[10px] font-semibold text-slate-500">Buy: KSh {(item.buyingPrice || 0).toLocaleString()}</p>
+                              <p className="text-[12px] font-bold text-slate-800 mt-0.5">Sell: KSh {(item.price || 0).toLocaleString()}</p>
+                            </td>
+                            <td className="px-4 py-1.5 text-center">
+                              <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[11px] font-black ${qtyColor}`}>
                                 {qty}
                               </span>
                             </td>
