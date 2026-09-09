@@ -179,7 +179,6 @@ export default function LoginPage() {
           {labels.map((s, i) => (
             <div key={i} className="lp-label" style={{ animationDelay: `${i * 0.08}s` }}>
               <span className="lp-ldash" />
-              <span className="lp-lcat">{s.cat}</span>
               <span className="lp-lname">{s.name}</span>
             </div>
           ))}
