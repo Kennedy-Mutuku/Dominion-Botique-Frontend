@@ -4,63 +4,83 @@ import { User, Lock, Eye, EyeOff, ArrowRight, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo bq.png';
 
-// ── Every boutique photo ──────────────────────────────────────────
-import p_ladies    from '../assets/ladies.jpg';
-import p_ladies2   from '../assets/ladies2.jpg';
-import p_ladies3   from '../assets/ladies3.jpg';
-import p_ladies4   from '../assets/ladies4.jpg';
-import p_ladies6   from '../assets/ladies6.jpg';
-import p_ladies7   from '../assets/ladies7.jpg';
-import p_ladies9   from '../assets/ladies9.jpg';
-import p_adies9    from '../assets/adies9.jpg';
-import p_dera1     from '../assets/dera1.jpg';
-import p_dera2     from '../assets/dera2.jpg';
-import p_men3      from '../assets/men3.jpg';
-import p_men4      from '../assets/men4.jpg';
-import p_men6      from '../assets/men6.jpg';
-import p_men7      from '../assets/men7.jpg';
-import p_men9      from '../assets/men9.jpg';
-import p_men10     from '../assets/men10.jpg';
-import p_men1      from '../assets/men 1.jpg';
-import p_handbags  from '../assets/handbags.jpg';
-import p_belt1     from '../assets/belt 1.jpg';
-import p_belt2     from '../assets/belt2.jpg';
-import p_belt3     from '../assets/belt3.jpg';
-import p_shirt4    from '../assets/shirt4.jpg';
-import p_shoes     from '../assets/shoesladies.jpg';
-import p_lshoes    from '../assets/ladies shoes.jpg';
-import p_lshoss    from '../assets/ladies shoss.jpg';
-import p_menshoes  from '../assets/men shoes.jpg';
-import p_menshoes2 from '../assets/men shoes 2.jpg';
-import p_menshos   from '../assets/men shos.jpg';
+// ── Boutique photo imports ────────────────────────────────────────
+import i_dera1     from '../assets/dera1.jpg';
+import i_ladies    from '../assets/ladies.jpg';
+import i_men10     from '../assets/men10.jpg';
+import i_handbags  from '../assets/handbags.jpg';
+import i_ladies4   from '../assets/ladies4.jpg';
+import i_men6      from '../assets/men6.jpg';
+import i_belt3     from '../assets/belt3.jpg';
+import i_shoes     from '../assets/shoesladies.jpg';
+import i_dera2     from '../assets/dera2.jpg';
+import i_ladies6   from '../assets/ladies6.jpg';
+import i_men4      from '../assets/men4.jpg';
+import i_lshoes    from '../assets/ladies shoes.jpg';
+import i_adies9    from '../assets/adies9.jpg';
+import i_men1      from '../assets/men 1.jpg';
+import i_belt2     from '../assets/belt2.jpg';
+import i_lshoss    from '../assets/ladies shoss.jpg';
+import i_ladies2   from '../assets/ladies2.jpg';
+import i_men7      from '../assets/men7.jpg';
+import i_shirt4    from '../assets/shirt4.jpg';
+import i_menshoes  from '../assets/men shoes.jpg';
+import i_ladies3   from '../assets/ladies3.jpg';
+import i_men9      from '../assets/men9.jpg';
+import i_belt1     from '../assets/belt 1.jpg';
+import i_menshoes2 from '../assets/men shoes 2.jpg';
+import i_ladies7   from '../assets/ladies7.jpg';
+import i_men3      from '../assets/men3.jpg';
+import i_menshos   from '../assets/men shos.jpg';
+import i_ladies9   from '../assets/ladies9.jpg';
 
-// Curated order: fashion → accessories → menswear, repeating
+// ── Slide data: photo + category label + name ─────────────────────
 const SLIDES = [
-  p_dera1,   p_ladies,   p_men10,   p_handbags,
-  p_ladies4, p_men6,     p_belt3,   p_shoes,
-  p_dera2,   p_ladies6,  p_men4,    p_lshoes,
-  p_adies9,  p_men1,     p_belt2,   p_lshoss,
-  p_ladies2, p_men7,     p_shirt4,  p_menshoes,
-  p_ladies3, p_men9,     p_belt1,   p_menshoes2,
-  p_ladies7, p_men3,     p_menshos, p_ladies9,
+  { img: i_dera1,     cat: 'Designer Collection', name: 'Evening Elegance'    },
+  { img: i_ladies,    cat: 'Ladies Fashion',       name: 'New Arrivals'        },
+  { img: i_men10,     cat: 'Menswear',             name: 'Premium Suits'       },
+  { img: i_handbags,  cat: 'Accessories',           name: 'Handbag Edit'        },
+  { img: i_ladies4,   cat: 'Ladies Fashion',        name: 'Casual Chic'         },
+  { img: i_men6,      cat: 'Menswear',              name: 'Smart Casual'        },
+  { img: i_belt3,     cat: 'Accessories',           name: 'Belt Collection'     },
+  { img: i_shoes,     cat: 'Footwear',              name: 'Ladies Heels'        },
+  { img: i_dera2,     cat: 'Designer Collection',   name: 'Signature Pieces'    },
+  { img: i_ladies6,   cat: 'Ladies Fashion',        name: 'Glamour Series'      },
+  { img: i_men4,      cat: 'Menswear',              name: 'Office Essentials'   },
+  { img: i_lshoes,    cat: 'Footwear',              name: 'Pumps & Heels'       },
+  { img: i_adies9,    cat: 'Ladies Fashion',        name: 'Floral Collection'   },
+  { img: i_men1,      cat: 'Menswear',              name: 'Classic Shirts'      },
+  { img: i_belt2,     cat: 'Accessories',           name: 'Leather Belts'       },
+  { img: i_lshoss,    cat: 'Footwear',              name: 'Shoe Collection'     },
+  { img: i_ladies2,   cat: 'Ladies Fashion',        name: 'Evening Gowns'       },
+  { img: i_men7,      cat: 'Menswear',              name: 'Weekend Wear'        },
+  { img: i_shirt4,    cat: 'Formal Wear',           name: 'Dress Shirts'        },
+  { img: i_menshoes,  cat: 'Footwear',              name: 'Oxford Shoes'        },
+  { img: i_ladies3,   cat: 'Ladies Fashion',        name: 'Spring Collection'   },
+  { img: i_men9,      cat: 'Menswear',              name: 'Tailored Fits'       },
+  { img: i_belt1,     cat: 'Accessories',           name: 'Classic Leather'     },
+  { img: i_menshoes2, cat: 'Footwear',              name: 'Premium Leather'     },
+  { img: i_ladies7,   cat: 'Ladies Fashion',        name: 'Bold & Beautiful'    },
+  { img: i_men3,      cat: 'Menswear',              name: 'Casual Essentials'   },
+  { img: i_menshos,   cat: 'Footwear',              name: 'Loafers Edit'        },
+  { img: i_ladies9,   cat: 'Ladies Fashion',        name: 'Style Icons'         },
 ];
 
-// Ken Burns variant per slide (cycles through 4 directions)
-const KB_CLASS = ['lp-kb0', 'lp-kb1', 'lp-kb2', 'lp-kb3'];
-const SLIDE_MS  = 5400;   // time each image is fully shown
-const FADE_MS   = 1300;   // crossfade duration
+const KB  = ['lp-kb0', 'lp-kb1', 'lp-kb2', 'lp-kb3'];
+const SLIDE_MS = 5400;
+const FADE_MS  = 1300;
 
-const LoginPage = () => {
+export default function LoginPage() {
   const navigate = useNavigate();
-  const { login }  = useAuth();
+  const { login } = useAuth();
 
-  // ── Slideshow state ──────────────────────────────────────────────
-  const slideRef = useRef({ curr: 0, prev: null });
-  const [currIdx, setCurrIdx] = useState(0);
-  const [prevIdx, setPrevIdx] = useState(null);
-  const [progKey, setProgKey] = useState(0); // restarts progress bar
+  // ── Slideshow ──────────────────────────────────────────────────
+  const ref     = useRef({ curr: 0, prev: null });
+  const [curr,     setCurr]    = useState(0);
+  const [prev,     setPrev]    = useState(null);
+  const [progKey,  setProgKey] = useState(0);
 
-  // ── Login form state ─────────────────────────────────────────────
+  // ── Login ──────────────────────────────────────────────────────
   const [step,     setStep]     = useState(1);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -70,147 +90,127 @@ const LoginPage = () => {
   const [shake,    setShake]    = useState(false);
   const [mounted,  setMounted]  = useState(false);
 
-  // Page enter animation
-  useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 80);
-    return () => clearTimeout(t);
-  }, []);
+  useEffect(() => { const t = setTimeout(() => setMounted(true), 80); return () => clearTimeout(t); }, []);
 
-  // Slideshow ticker
   useEffect(() => {
     const id = setInterval(() => {
-      const next = (slideRef.current.curr + 1) % SLIDES.length;
-      slideRef.current.prev = slideRef.current.curr;
-      slideRef.current.curr = next;
-      setPrevIdx(slideRef.current.prev);
-      setCurrIdx(next);
+      const next = (ref.current.curr + 1) % SLIDES.length;
+      ref.current.prev = ref.current.curr;
+      ref.current.curr = next;
+      setPrev(ref.current.prev);
+      setCurr(next);
       setProgKey(k => k + 1);
     }, SLIDE_MS);
     return () => clearInterval(id);
   }, []);
 
-  // ── Handlers ─────────────────────────────────────────────────────
   const handleContinue = (e) => {
     e.preventDefault();
     const t = username.trim();
     if (t !== 'User' && t !== 'Admin') { setUserErr('Unknown username'); return; }
-    setUserErr('');
-    setStep(2);
+    setUserErr(''); setStep(2);
   };
 
   const handleSignIn = (e) => {
     e.preventDefault();
-    const result = login(username.trim(), password);
-    if (result.success) {
-      navigate(username.trim() === 'Admin' ? '/admin' : '/');
-    } else {
-      setPassErr('Incorrect password');
-      setShake(true);
-      setTimeout(() => setShake(false), 650);
-    }
+    const r = login(username.trim(), password);
+    if (r.success) { navigate(username.trim() === 'Admin' ? '/admin' : '/'); }
+    else { setPassErr('Incorrect password'); setShake(true); setTimeout(() => setShake(false), 650); }
   };
 
-  const TAGS = ['Elegance', 'Curated', 'Boutique', 'Premium', 'Bespoke'];
+  const slide   = SLIDES[curr];
+  const thumbs  = [1, 2, 3, 4].map(o => SLIDES[(curr + o) % SLIDES.length]);
+  const counter = String(curr + 1).padStart(2, '0');
 
   return (
     <div className="lp-root">
 
-      {/* ══════════════════ Photo Slideshow ══════════════════ */}
-      <div className="lp-show">
-        {/* Outgoing photo fades out */}
-        {prevIdx !== null && (
+      {/* ══ Background Slideshow ══ */}
+      <div className="lp-bg">
+        {prev !== null && (
           <img
-            key={`out-${prevIdx}`}
-            src={SLIDES[prevIdx]}
-            className="lp-img lp-img-out"
-            alt=""
-            onAnimationEnd={() => setPrevIdx(null)}
+            key={`out-${prev}`} src={SLIDES[prev].img} alt=""
+            className="lp-img lp-out"
+            onAnimationEnd={() => setPrev(null)}
           />
         )}
-        {/* Incoming photo fades in + Ken Burns */}
         <img
-          key={`in-${currIdx}`}
-          src={SLIDES[currIdx]}
-          className={`lp-img lp-img-in ${KB_CLASS[currIdx % 4]}`}
-          alt=""
+          key={`in-${curr}`} src={slide.img} alt=""
+          className={`lp-img lp-in ${KB[curr % 4]}`}
         />
       </div>
 
-      {/* ══════════════════ Overlays ══════════════════ */}
-      {/* Right-side darkening so card is legible */}
-      <div className="lp-ov-r" />
-      {/* Top & bottom vignette */}
-      <div className="lp-ov-tb" />
-      {/* Left-side slight darkening for brand text */}
-      <div className="lp-ov-l" />
+      {/* ══ Overlays ══ */}
+      <div className="lp-ov-base"  /> {/* base dark tint */}
+      <div className="lp-ov-left"  /> {/* left darkens for text */}
+      <div className="lp-ov-right" /> {/* right darkens for card */}
+      <div className="lp-ov-bot"   /> {/* bottom gradient for thumbs */}
+      <div className="lp-ov-top"   /> {/* top vignette */}
 
-      {/* Progress bar */}
+      {/* ══ Progress bar (top) ══ */}
       <div className="lp-prog-track">
         <div key={progKey} className="lp-prog-bar" />
       </div>
 
-      {/* ══════════════════ Layout ══════════════════ */}
+      {/* ══ Layout ══ */}
       <div className="lp-layout">
 
-        {/* ── Left Brand Panel (desktop) ── */}
-        <aside className="lp-brand" style={{ '--d': '0.25s' }}>
+        {/* ── Left: brand + slide text + thumbs ── */}
+        <div className="lp-left" style={{ opacity: mounted ? 1 : 0, transition: 'opacity .8s ease .1s' }}>
 
-          <div className="lp-brand-top">
-            <img src={logo} alt="" className="lp-b-logo" />
-            <div className="lp-vsep" />
-            <span className="lp-portal">Management Portal</span>
+          {/* Brand mark — top */}
+          <div className="lp-mark">
+            <img src={logo} alt="" className="lp-mark-logo" />
+            <div className="lp-mark-sep" />
+            <span className="lp-mark-label">Management Portal</span>
           </div>
 
-          <div className="lp-brand-mid">
-            <div className="lp-rule">
-              <span className="lp-rl" />
-              <Heart size={9} className="lp-h" />
-              <span className="lp-rl" />
+          {/* Slide text — bottom of left panel, animates in per slide */}
+          <div className="lp-bottom-left">
+            <div key={`txt-${curr}`} className="lp-txt-block">
+              {/* Accent dash — like video's yellow line */}
+              <div className="lp-dash" />
+              {/* Category (slides in first) */}
+              <p className="lp-cat">{slide.cat}</p>
+              {/* Big title (slides in after, like the video) */}
+              <h1 className="lp-title">{slide.name}</h1>
             </div>
 
-            <h1 className="lp-hl">
-              Nyakoe<br />
-              <em className="lp-em">Fassions</em>
-            </h1>
-
-            <p className="lp-sub">Timeless Style, Just For You</p>
-
-            <div className="lp-tags">
-              {TAGS.map((tag, i) => (
-                <span
-                  key={tag}
-                  className="lp-tag"
-                  style={{ animationDelay: `${i * 0.45}s` }}
+            {/* Thumbnail strip — next 4 photos, slide in from right */}
+            <div key={`th-${curr}`} className="lp-thumbs">
+              {thumbs.map((t, i) => (
+                <div
+                  key={i}
+                  className="lp-thumb"
+                  style={{ animationDelay: `${0.08 + i * 0.09}s` }}
                 >
-                  {tag}
-                </span>
+                  <img src={t.img} alt="" className="lp-thumb-img" />
+                  <div className="lp-thumb-veil">
+                    <span className="lp-thumb-cat">{t.cat}</span>
+                    <span className="lp-thumb-name">{t.name}</span>
+                  </div>
+                </div>
               ))}
             </div>
 
-            {/* Slide position indicator */}
+            {/* Slide counter — bottom right of left panel */}
             <div className="lp-counter">
-              <span className="lp-cnt-num">
-                {String(currIdx + 1).padStart(2, '0')}
-              </span>
-              <span className="lp-cnt-sep">/</span>
-              <span className="lp-cnt-total">{String(SLIDES.length).padStart(2, '0')}</span>
+              <span className="lp-cnt-n">{counter}</span>
+              <span className="lp-cnt-s"> / </span>
+              <span className="lp-cnt-t">{String(SLIDES.length).padStart(2,'0')}</span>
             </div>
           </div>
+        </div>
 
-          <p className="lp-brand-ft">© 2025 Nyakoe Fassions · All rights reserved</p>
-        </aside>
+        {/* ── Right: login card ── */}
+        <div className="lp-right">
 
-        {/* ── Right Login Panel ── */}
-        <section className="lp-panel" style={{ '--d': '0.55s' }}>
-
-          {/* Mobile brand header */}
-          <div className="lp-mob">
+          {/* Mobile-only logo */}
+          <div className="lp-mob-head">
             <img src={logo} alt="" className="lp-mob-logo" />
             <h2 className="lp-mob-title">Nyakoe Fassions</h2>
-            <div className="lp-rule lp-rule-c">
-              <span className="lp-rl" />
-              <Heart size={7} className="lp-h" />
-              <span className="lp-rl" />
+            <div className="lp-mob-rule">
+              <span className="lp-rl" /><Heart size={7} className="lp-heart" /><span className="lp-rl" />
             </div>
           </div>
 
@@ -219,59 +219,43 @@ const LoginPage = () => {
             className="lp-card"
             style={{
               opacity:    mounted ? 1 : 0,
-              transform:  mounted ? 'translateY(0) scale(1)' : 'translateY(28px) scale(0.97)',
-              transition: `opacity .9s ease var(--d), transform .9s cubic-bezier(.16,1,.3,1) var(--d)`,
+              transform:  mounted ? 'translateY(0) scale(1)' : 'translateY(26px) scale(0.97)',
+              transition: 'opacity .9s ease .5s, transform .9s cubic-bezier(.16,1,.3,1) .5s',
             }}
           >
-            {/* Card header */}
             <div className="lp-ch">
               <p className="lp-eyebrow">Welcome back</p>
-              <h3 className="lp-ct">
+              <h3 className="lp-ctitle">
                 {step === 1 ? 'Sign In' : 'Enter Password'}
               </h3>
-              <p className="lp-cs">
-                {step === 1
-                  ? 'Enter your username to continue'
-                  : `Signing in as · ${username}`}
+              <p className="lp-csub">
+                {step === 1 ? 'Enter your username to continue' : `Signing in as · ${username}`}
               </p>
             </div>
 
-            <form
-              onSubmit={step === 1 ? handleContinue : handleSignIn}
-              className="lp-form"
-            >
+            <form onSubmit={step === 1 ? handleContinue : handleSignIn} className="lp-form">
+
               {/* Username */}
               <div className="lp-field">
                 <label className="lp-lbl">Username</label>
-
                 {step === 2 ? (
                   <div className="lp-chip">
                     <div className="lp-chip-av"><User size={11} /></div>
                     <span className="lp-chip-name">{username}</span>
-                    <button
-                      type="button"
-                      className="lp-chip-change"
-                      onClick={() => { setStep(1); setPassword(''); setPassErr(''); }}
-                    >
+                    <button type="button" className="lp-chip-btn"
+                      onClick={() => { setStep(1); setPassword(''); setPassErr(''); }}>
                       Change
                     </button>
                   </div>
                 ) : (
                   <div className="lp-iw">
                     <User size={15} className="lp-ii" />
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={e => { setUsername(e.target.value); setUserErr(''); }}
+                    <input type="text" value={username} autoFocus className="lp-i"
                       placeholder="Enter your username"
-                      autoFocus
-                      className="lp-i"
-                    />
+                      onChange={e => { setUsername(e.target.value); setUserErr(''); }} />
                   </div>
                 )}
-                {userErr && (
-                  <p className="lp-err"><span className="lp-ed" />{userErr}</p>
-                )}
+                {userErr && <p className="lp-err"><span className="lp-ed" />{userErr}</p>}
               </div>
 
               {/* Password */}
@@ -282,23 +266,15 @@ const LoginPage = () => {
                     <Lock size={15} className="lp-ii" />
                     <input
                       type={showPw ? 'text' : 'password'}
-                      value={password}
-                      onChange={e => { setPassword(e.target.value); setPassErr(''); }}
+                      value={password} autoFocus className="lp-i"
                       placeholder="••••••••"
-                      autoFocus
-                      className="lp-i"
+                      onChange={e => { setPassword(e.target.value); setPassErr(''); }}
                     />
-                    <button
-                      type="button"
-                      className="lp-eye"
-                      onClick={() => setShowPw(v => !v)}
-                    >
+                    <button type="button" className="lp-eye" onClick={() => setShowPw(v => !v)}>
                       {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
                     </button>
                   </div>
-                  {passErr && (
-                    <p className="lp-err"><span className="lp-ed" />{passErr}</p>
-                  )}
+                  {passErr && <p className="lp-err"><span className="lp-ed" />{passErr}</p>}
                 </div>
               )}
 
@@ -310,281 +286,254 @@ const LoginPage = () => {
 
             <p className="lp-cf">Nyakoe Fassions · Private Access</p>
           </div>
-        </section>
+        </div>
       </div>
 
-      {/* ══════════════════ All Styles ══════════════════ */}
+      {/* ══ Styles ══ */}
       <style>{`
-        /* ── Root ── */
+        /* ─ Root ─ */
         .lp-root {
-          position: relative;
-          min-height: 100vh;
-          width: 100%;
-          overflow: hidden;
-          background: #0a0a0a;
-          display: flex;
+          position: relative; min-height: 100vh; width: 100%;
+          overflow: hidden; background: #060608; display: flex;
         }
 
-        /* ── Slideshow container ── */
-        .lp-show {
-          position: absolute;
-          inset: 0;
-          z-index: 0;
-        }
+        /* ─ Background slideshow ─ */
+        .lp-bg { position: absolute; inset: 0; z-index: 0; }
 
-        /* ── Slide images ── */
         .lp-img {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: center top;
+          position: absolute; inset: 0;
+          width: 100%; height: 100%;
+          object-fit: cover; object-position: center center;
         }
-
-        /* Incoming: fade in */
-        .lp-img-in {
+        .lp-in {
           z-index: 2;
           animation:
             lp-fadein ${FADE_MS}ms ease-out forwards,
             lp-kb0 ${SLIDE_MS + FADE_MS * 2}ms ease-out forwards;
         }
+        .lp-out { z-index: 1; animation: lp-fadeout ${FADE_MS}ms ease-in forwards; }
 
-        /* Outgoing: fade out */
-        .lp-img-out {
-          z-index: 1;
-          animation: lp-fadeout ${FADE_MS}ms ease-in forwards;
-        }
-
-        /* Ken Burns variants — each has a different zoom origin & direction */
+        /* Ken Burns — 4 direction variants */
         .lp-kb0 { animation-name: lp-fadein, lp-kb0; }
         .lp-kb1 { animation-name: lp-fadein, lp-kb1; }
         .lp-kb2 { animation-name: lp-fadein, lp-kb2; }
         .lp-kb3 { animation-name: lp-fadein, lp-kb3; }
 
-        @keyframes lp-fadein {
-          from { opacity: 0; }
-          to   { opacity: 1; }
-        }
-        @keyframes lp-fadeout {
-          from { opacity: 1; }
-          to   { opacity: 0; }
-        }
+        @keyframes lp-fadein  { from { opacity:0; } to { opacity:1; } }
+        @keyframes lp-fadeout { from { opacity:1; } to { opacity:0; } }
 
-        /* Pan + zoom – subtle cinematic movement */
         @keyframes lp-kb0 {
-          from { transform: scale(1.00) translate( 0%,    0%  ); }
-          to   { transform: scale(1.12) translate(-2%,   -1.5%); }
+          from { transform: scale(1.00) translate(  0%,   0%  ); }
+          to   { transform: scale(1.12) translate( -2%,  -1.5%); }
         }
         @keyframes lp-kb1 {
-          from { transform: scale(1.06) translate( 2%,    1%  ); }
-          to   { transform: scale(1.15) translate(-1.5%, -2%  ); }
+          from { transform: scale(1.05) translate(  2%,   1%  ); }
+          to   { transform: scale(1.15) translate( -1%,  -2%  ); }
         }
         @keyframes lp-kb2 {
-          from { transform: scale(1.00) translate(-2%,    1%  ); }
-          to   { transform: scale(1.13) translate( 1.5%, -2%  ); }
+          from { transform: scale(1.00) translate( -2%,   1%  ); }
+          to   { transform: scale(1.13) translate(1.5%,  -2%  ); }
         }
         @keyframes lp-kb3 {
-          from { transform: scale(1.08) translate( 0%,    2%  ); }
-          to   { transform: scale(1.16) translate(-2%,   -1%  ); }
+          from { transform: scale(1.08) translate(  0%,   2%  ); }
+          to   { transform: scale(1.16) translate( -2%,  -1%  ); }
         }
 
-        /* ── Overlays ── */
-        .lp-ov-r {
+        /* ─ Overlays ─ */
+        .lp-ov-base {
           position: absolute; inset: 0; z-index: 3;
-          background: linear-gradient(
-            to left,
-            rgba(0,0,0,.88) 0%,
-            rgba(0,0,0,.72) 30%,
-            rgba(0,0,0,.35) 60%,
-            transparent    100%
-          );
+          background: rgba(0,0,0,.42);
         }
-        .lp-ov-tb {
+        .lp-ov-left {
           position: absolute; inset: 0; z-index: 4;
-          background:
-            linear-gradient(to bottom, rgba(0,0,0,.55) 0%, transparent 22%),
-            linear-gradient(to top,    rgba(0,0,0,.60) 0%, transparent 30%);
-        }
-        .lp-ov-l {
-          position: absolute; inset: 0; z-index: 3;
           background: linear-gradient(
             to right,
-            rgba(0,0,0,.52) 0%,
-            rgba(0,0,0,.18) 40%,
-            transparent    70%
+            rgba(0,0,0,.65) 0%,
+            rgba(0,0,0,.28) 45%,
+            transparent 65%
           );
         }
+        .lp-ov-right {
+          position: absolute; inset: 0; z-index: 4;
+          background: linear-gradient(
+            to left,
+            rgba(0,0,0,.85) 0%,
+            rgba(0,0,0,.55) 35%,
+            transparent 60%
+          );
+        }
+        .lp-ov-bot {
+          position: absolute; inset: 0; z-index: 4;
+          background: linear-gradient(to top, rgba(0,0,0,.80) 0%, transparent 45%);
+        }
+        .lp-ov-top {
+          position: absolute; inset: 0; z-index: 4;
+          background: linear-gradient(to bottom, rgba(0,0,0,.50) 0%, transparent 18%);
+        }
 
-        /* ── Progress bar ── */
+        /* ─ Progress bar ─ */
         .lp-prog-track {
-          position: absolute;
-          bottom: 0; left: 0; right: 0;
-          height: 2px;
-          background: rgba(255,255,255,.08);
-          z-index: 20;
+          position: absolute; top: 0; left: 0; right: 0;
+          height: 3px; z-index: 30;
+          background: rgba(255,255,255,.07);
         }
         .lp-prog-bar {
           height: 100%;
           background: linear-gradient(to right, #f43f5e, #e879f9);
-          animation: lp-progress ${SLIDE_MS}ms linear forwards;
-          transform-origin: left;
+          animation: lp-prog ${SLIDE_MS}ms linear forwards;
         }
-        @keyframes lp-progress {
-          from { width: 0%; }
-          to   { width: 100%; }
-        }
+        @keyframes lp-prog { from { width:0%; } to { width:100%; } }
 
-        /* ── Main layout ── */
+        /* ─ Layout ─ */
         .lp-layout {
-          position: relative;
-          z-index: 10;
-          display: flex;
-          width: 100%;
-          min-height: 100vh;
+          position: relative; z-index: 10;
+          display: flex; width: 100%; min-height: 100vh;
         }
 
-        /* ══ Left brand panel ══ */
-        .lp-brand {
+        /* ══ Left panel ══ */
+        .lp-left {
           display: none;
           flex-direction: column;
           justify-content: space-between;
-          width: 56%;
-          padding: 2.75rem 3.5rem;
-          opacity: 0;
-          animation: lp-enter .9s cubic-bezier(.16,1,.3,1) var(--d, .2s) forwards;
+          width: 58%;
+          padding: 2.5rem 3rem;
+          pointer-events: none;
         }
-        @media (min-width: 1024px) { .lp-brand { display: flex; } }
+        @media (min-width: 1024px) { .lp-left { display: flex; } }
 
-        .lp-brand-top {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
+        /* Brand mark */
+        .lp-mark { display: flex; align-items: center; gap: .9rem; }
+        .lp-mark-logo {
+          height: 40px; width: auto;
+          filter: brightness(0) invert(1); opacity: .75;
         }
-        .lp-b-logo {
-          height: 42px; width: auto;
-          filter: brightness(0) invert(1);
-          opacity: .75;
-        }
-        .lp-vsep {
-          width: 1px; height: 1.75rem;
-          background: rgba(255,255,255,.18);
-        }
-        .lp-portal {
-          font-size: 9px;
-          font-weight: 700;
-          letter-spacing: .38em;
-          text-transform: uppercase;
+        .lp-mark-sep { width:1px; height:1.6rem; background:rgba(255,255,255,.18); }
+        .lp-mark-label {
+          font-size: 9px; font-weight: 700;
+          letter-spacing: .38em; text-transform: uppercase;
           color: rgba(255,255,255,.32);
         }
 
-        .lp-brand-mid {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          gap: 0;
+        /* Bottom of left panel */
+        .lp-bottom-left {
+          display: flex; flex-direction: column; gap: 1.2rem;
         }
 
-        /* Decorative rule */
-        .lp-rule {
-          display: flex;
-          align-items: center;
-          gap: .45rem;
-          margin-bottom: 1.6rem;
+        /* ── Slide text block (re-animates on each slide) ── */
+        .lp-txt-block {
+          animation: lp-txt-enter .55s cubic-bezier(.16,1,.3,1) both;
         }
-        .lp-rule-c { justify-content: center; margin-bottom: .6rem; }
-        .lp-rl {
-          display: block;
-          width: 36px; height: 1px;
-          background: rgba(251,113,133,.5);
-        }
-        .lp-h { color: #fb7185; fill: #fb7185; flex-shrink: 0; }
-
-        /* Main heading */
-        .lp-hl {
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: clamp(3rem, 4.5vw, 5.5rem);
-          font-weight: 300;
-          line-height: 1.06;
-          letter-spacing: .06em;
-          color: rgba(255,255,255,.92);
-          margin-bottom: 1.1rem;
-        }
-        .lp-em {
-          font-style: italic;
-          background: linear-gradient(135deg, #f43f5e 0%, #e879f9 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+        @keyframes lp-txt-enter {
+          from { opacity:0; transform: translateX(-32px); }
+          to   { opacity:1; transform: translateX(0); }
         }
 
-        .lp-sub {
-          font-size: 10px;
-          font-weight: 600;
-          letter-spacing: .32em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,.28);
-          margin-bottom: 2.2rem;
+        /* Accent dash (mimics video's amber line) */
+        .lp-dash {
+          width: 32px; height: 2px;
+          background: linear-gradient(to right, #f43f5e, #e879f9);
+          border-radius: 2px;
+          margin-bottom: .65rem;
+          animation: lp-dash-in .4s ease both;
+        }
+        @keyframes lp-dash-in {
+          from { width: 0; opacity: 0; }
+          to   { width: 32px; opacity: 1; }
         }
 
-        /* Floating tags */
-        .lp-tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: .4rem;
-          margin-bottom: 2rem;
-        }
-        .lp-tag {
-          font-size: 8.5px;
-          font-weight: 700;
-          letter-spacing: .22em;
-          text-transform: uppercase;
-          padding: .35rem .8rem;
-          border: 1px solid rgba(255,255,255,.10);
-          color: rgba(255,255,255,.32);
-          border-radius: 999px;
-          animation: lp-float 3.2s ease-in-out infinite alternate;
-        }
-        @keyframes lp-float {
-          from { transform: translateY(0);    opacity: .32; }
-          to   { transform: translateY(-6px); opacity: .62; }
-        }
-
-        /* Slide counter */
-        .lp-counter {
-          display: flex;
-          align-items: baseline;
-          gap: .4rem;
-        }
-        .lp-cnt-num {
-          font-family: Georgia, serif;
-          font-size: 2rem;
-          font-weight: 300;
+        /* Category text */
+        .lp-cat {
+          font-size: 11px; font-weight: 700;
+          letter-spacing: .35em; text-transform: uppercase;
           color: rgba(255,255,255,.55);
-          letter-spacing: .04em;
-          line-height: 1;
+          margin-bottom: .5rem;
+          animation: lp-txt-enter .55s cubic-bezier(.16,1,.3,1) .05s both;
         }
-        .lp-cnt-sep {
-          font-size: 10px;
-          color: rgba(255,255,255,.2);
-          letter-spacing: .1em;
+
+        /* Big title — exactly like the video */
+        .lp-title {
+          font-family: Georgia, "Times New Roman", serif;
+          font-size: clamp(2.2rem, 3.8vw, 4.4rem);
+          font-weight: 900;
+          line-height: 1.0;
+          letter-spacing: .03em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,.95);
+          margin: 0;
+          animation: lp-txt-enter .6s cubic-bezier(.16,1,.3,1) .12s both;
         }
-        .lp-cnt-total {
+
+        /* ── Thumbnail strip ── */
+        .lp-thumbs {
+          display: flex; gap: .65rem;
+          overflow: visible;
+        }
+
+        .lp-thumb {
+          position: relative;
+          width: 110px; height: 145px;
+          border-radius: .75rem;
+          overflow: hidden;
+          flex-shrink: 0;
+          cursor: default;
+          animation: lp-thumb-in .5s cubic-bezier(.16,1,.3,1) both;
+          box-shadow: 0 8px 24px rgba(0,0,0,.5);
+        }
+        @keyframes lp-thumb-in {
+          from { opacity:0; transform: translateX(28px) scale(0.92); }
+          to   { opacity:1; transform: translateX(0)    scale(1); }
+        }
+
+        .lp-thumb-img {
+          width: 100%; height: 100%;
+          object-fit: cover; object-position: center top;
+          transition: transform .4s ease;
+        }
+        .lp-thumb:hover .lp-thumb-img { transform: scale(1.06); }
+
+        .lp-thumb-veil {
+          position: absolute; inset: 0;
+          background: linear-gradient(to top, rgba(0,0,0,.82) 0%, transparent 55%);
+          display: flex; flex-direction: column;
+          justify-content: flex-end;
+          padding: .6rem .55rem;
+          gap: .15rem;
+        }
+        .lp-thumb-cat {
+          font-size: 7px; font-weight: 700;
+          letter-spacing: .2em; text-transform: uppercase;
+          color: rgba(255,255,255,.45);
+        }
+        .lp-thumb-name {
+          font-size: 9px; font-weight: 800;
+          letter-spacing: .06em; text-transform: uppercase;
+          color: rgba(255,255,255,.88);
+          line-height: 1.2;
+        }
+
+        /* ── Slide counter (video: "01", "02"...) ── */
+        .lp-counter {
+          display: flex; align-items: baseline; gap: .3rem;
+        }
+        .lp-cnt-n {
+          font-family: Georgia, serif;
+          font-size: 3rem; font-weight: 300; line-height: 1;
+          color: rgba(255,255,255,.60);
+          letter-spacing: .05em;
+        }
+        .lp-cnt-s {
           font-size: 11px;
           color: rgba(255,255,255,.22);
           letter-spacing: .08em;
         }
-
-        .lp-brand-ft {
-          font-size: 9px;
-          letter-spacing: .14em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,.15);
+        .lp-cnt-t {
+          font-size: 12px; font-weight: 600;
+          color: rgba(255,255,255,.22);
+          letter-spacing: .06em;
         }
 
         /* ══ Right panel ══ */
-        .lp-panel {
+        .lp-right {
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -592,98 +541,79 @@ const LoginPage = () => {
           width: 100%;
           padding: 1.75rem 1.25rem;
           min-height: 100vh;
-          opacity: 0;
-          animation: lp-enter .9s cubic-bezier(.16,1,.3,1) var(--d, .5s) forwards;
         }
-        @media (min-width: 1024px) {
-          .lp-panel { width: 44%; padding: 2.5rem 2.5rem; }
-        }
+        @media (min-width: 1024px) { .lp-right { width: 42%; padding: 2.5rem; } }
 
-        /* Mobile brand */
-        .lp-mob {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+        /* Mobile logo */
+        .lp-mob-head {
+          display: flex; flex-direction: column; align-items: center;
           margin-bottom: 1.5rem;
         }
-        @media (min-width: 1024px) { .lp-mob { display: none; } }
+        @media (min-width: 1024px) { .lp-mob-head { display: none; } }
         .lp-mob-logo {
-          height: 50px; width: auto;
-          filter: brightness(0) invert(1);
-          opacity: .80;
+          height: 48px; width: auto;
+          filter: brightness(0) invert(1); opacity: .8;
           margin-bottom: .65rem;
         }
         .lp-mob-title {
           font-family: Georgia, serif;
-          font-size: 1.2rem;
-          font-weight: 300;
-          letter-spacing: .22em;
+          font-size: 1.15rem; font-weight: 300;
+          letter-spacing: .22em; text-transform: uppercase;
           color: rgba(255,255,255,.88);
-          text-transform: uppercase;
           margin-bottom: .4rem;
         }
+        .lp-mob-rule { display: flex; align-items: center; gap: .4rem; }
+        .lp-rl { display: block; width: 30px; height: 1px; background: rgba(251,113,133,.5); }
+        .lp-heart { color: #fb7185; fill: #fb7185; flex-shrink: 0; }
 
         /* ── Glass card ── */
         .lp-card {
-          width: 100%;
-          max-width: 400px;
-          background: rgba(5,5,8,.60);
+          width: 100%; max-width: 390px;
+          background: rgba(4,4,8,.62);
           backdrop-filter: blur(32px);
           -webkit-backdrop-filter: blur(32px);
           border: 1px solid rgba(255,255,255,.09);
           border-radius: 1.5rem;
           padding: 2rem 1.85rem;
           box-shadow:
-            0 0 0 1px rgba(255,255,255,.03) inset,
-            0 32px 64px rgba(0,0,0,.65),
-            0 0 90px rgba(244,63,94,.05);
+            0 0 0 1px rgba(255,255,255,.025) inset,
+            0 32px 64px rgba(0,0,0,.7),
+            0 0 80px rgba(244,63,94,.06);
         }
 
-        /* Card header */
-        .lp-ch { margin-bottom: 1.6rem; }
+        .lp-ch { margin-bottom: 1.5rem; }
         .lp-eyebrow {
-          font-size: 8.5px;
-          font-weight: 700;
-          letter-spacing: .4em;
-          text-transform: uppercase;
-          color: #f43f5e;
-          margin-bottom: .35rem;
+          font-size: 8.5px; font-weight: 700;
+          letter-spacing: .42em; text-transform: uppercase;
+          color: #f43f5e; margin-bottom: .35rem;
         }
-        .lp-ct {
+        .lp-ctitle {
           font-family: Georgia, serif;
-          font-size: 1.5rem;
-          font-weight: 300;
+          font-size: 1.5rem; font-weight: 300;
           letter-spacing: .04em;
-          color: rgba(255,255,255,.92);
-          margin-bottom: .3rem;
+          color: rgba(255,255,255,.92); margin-bottom: .3rem;
         }
-        .lp-cs {
-          font-size: 11px;
-          color: rgba(255,255,255,.24);
-        }
+        .lp-csub { font-size: 11px; color: rgba(255,255,255,.24); }
 
-        /* Form */
-        .lp-form { display: flex; flex-direction: column; gap: .9rem; }
+        .lp-form { display: flex; flex-direction: column; gap: .85rem; }
         .lp-field { display: flex; flex-direction: column; }
-        .lp-field-in { animation: lp-slide-in .4s cubic-bezier(.16,1,.3,1); }
+        .lp-field-in { animation: lp-field-slide .4s cubic-bezier(.16,1,.3,1); }
+        @keyframes lp-field-slide {
+          from { opacity:0; transform:translateY(-10px); }
+          to   { opacity:1; transform:translateY(0); }
+        }
         .lp-lbl {
-          font-size: 8.5px;
-          font-weight: 700;
-          letter-spacing: .32em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,.28);
-          margin-bottom: .45rem;
+          font-size: 8.5px; font-weight: 700;
+          letter-spacing: .32em; text-transform: uppercase;
+          color: rgba(255,255,255,.28); margin-bottom: .45rem;
         }
 
-        /* Input wrapper */
+        /* Input */
         .lp-iw { position: relative; display: flex; align-items: center; }
         .lp-ii {
-          position: absolute;
-          left: .95rem;
+          position: absolute; left: .95rem;
           color: rgba(255,255,255,.22);
-          pointer-events: none;
-          transition: color .2s;
-          flex-shrink: 0;
+          pointer-events: none; transition: color .2s; flex-shrink: 0;
         }
         .lp-iw:focus-within .lp-ii { color: #f43f5e; }
         .lp-i {
@@ -692,9 +622,7 @@ const LoginPage = () => {
           background: rgba(255,255,255,.05);
           border: 1px solid rgba(255,255,255,.08);
           border-radius: .875rem;
-          color: rgba(255,255,255,.90);
-          font-size: .875rem;
-          outline: none;
+          color: rgba(255,255,255,.90); font-size: .875rem; outline: none;
           transition: border-color .2s, background .2s, box-shadow .2s;
         }
         .lp-i::placeholder { color: rgba(255,255,255,.16); }
@@ -705,11 +633,9 @@ const LoginPage = () => {
         }
         .lp-eye {
           position: absolute; right: .9rem;
-          color: rgba(255,255,255,.22);
-          background: none; border: none;
+          color: rgba(255,255,255,.22); background: none; border: none;
           cursor: pointer; display: flex; align-items: center;
-          transition: color .2s;
-          padding: 0;
+          transition: color .2s; padding: 0;
         }
         .lp-eye:hover { color: rgba(255,255,255,.55); }
 
@@ -718,90 +644,81 @@ const LoginPage = () => {
           display: flex; align-items: center; gap: .55rem;
           background: rgba(255,255,255,.05);
           border: 1px solid rgba(255,255,255,.08);
-          border-radius: .875rem;
-          padding: .72rem .95rem;
+          border-radius: .875rem; padding: .72rem .95rem;
         }
         .lp-chip-av {
           width: 1.45rem; height: 1.45rem;
-          background: rgba(244,63,94,.18);
-          border-radius: 50%;
+          background: rgba(244,63,94,.18); border-radius: 50%;
           display: flex; align-items: center; justify-content: center;
           color: #f43f5e; flex-shrink: 0;
         }
-        .lp-chip-name {
-          flex: 1; font-size: .875rem; font-weight: 700;
-          color: rgba(255,255,255,.86);
+        .lp-chip-name { flex:1; font-size:.875rem; font-weight:700; color:rgba(255,255,255,.86); }
+        .lp-chip-btn {
+          font-size:8.5px; font-weight:700; letter-spacing:.18em;
+          text-transform:uppercase; color:#f43f5e;
+          background:none; border:none; cursor:pointer; transition:color .2s; padding:0;
         }
-        .lp-chip-change {
-          font-size: 8.5px; font-weight: 700; letter-spacing: .18em;
-          text-transform: uppercase; color: #f43f5e;
-          background: none; border: none; cursor: pointer;
-          transition: color .2s; padding: 0;
-        }
-        .lp-chip-change:hover { color: #fb7185; }
+        .lp-chip-btn:hover { color:#fb7185; }
 
         /* Error */
         .lp-err {
-          display: flex; align-items: center; gap: .3rem;
-          margin-top: .4rem; font-size: 11px; font-weight: 600; color: #f43f5e;
+          display:flex; align-items:center; gap:.3rem;
+          margin-top:.38rem; font-size:11px; font-weight:600; color:#f43f5e;
         }
-        .lp-ed {
-          display: inline-block; width: 4px; height: 4px;
-          background: #f43f5e; border-radius: 50%; flex-shrink: 0;
-        }
+        .lp-ed { display:inline-block; width:4px; height:4px; background:#f43f5e; border-radius:50%; flex-shrink:0; }
 
         /* Submit */
         .lp-btn {
-          display: flex; align-items: center; justify-content: center; gap: .45rem;
-          width: 100%;
-          padding: .88rem 1rem;
+          display:flex; align-items:center; justify-content:center; gap:.45rem;
+          width:100%; padding:.88rem 1rem;
           background: linear-gradient(135deg, #f43f5e 0%, #c026d3 100%);
-          color: #fff;
-          font-size: 10.5px; font-weight: 700;
-          letter-spacing: .22em; text-transform: uppercase;
-          border: none; border-radius: .875rem; cursor: pointer;
-          margin-top: .15rem;
+          color:#fff; font-size:10.5px; font-weight:700;
+          letter-spacing:.22em; text-transform:uppercase;
+          border:none; border-radius:.875rem; cursor:pointer; margin-top:.1rem;
           box-shadow: 0 8px 26px rgba(244,63,94,.28);
           transition: transform .2s, box-shadow .2s, filter .2s;
         }
-        .lp-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 14px 36px rgba(244,63,94,.45);
-          filter: brightness(1.09);
-        }
-        .lp-btn:active { transform: scale(.97); }
+        .lp-btn:hover { transform:translateY(-2px); box-shadow:0 14px 36px rgba(244,63,94,.45); filter:brightness(1.08); }
+        .lp-btn:active { transform:scale(.97); }
 
-        /* Card footer */
         .lp-cf {
-          margin-top: 1.4rem;
-          padding-top: 1.1rem;
-          border-top: 1px solid rgba(255,255,255,.05);
-          text-align: center;
-          font-size: 8.5px; letter-spacing: .2em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,.13);
+          margin-top:1.3rem; padding-top:1rem;
+          border-top:1px solid rgba(255,255,255,.05);
+          text-align:center; font-size:8.5px; letter-spacing:.2em;
+          text-transform:uppercase; color:rgba(255,255,255,.12);
         }
 
-        /* ── Keyframes ── */
-        @keyframes lp-enter {
-          from { opacity: 0; transform: translateY(16px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes lp-slide-in {
-          from { opacity: 0; transform: translateY(-12px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
+        /* ─ Keyframes ─ */
         @keyframes lp-shake {
-          0%,100% { transform: translateX(0); }
-          18%     { transform: translateX(-8px); }
-          36%     { transform: translateX(8px); }
-          54%     { transform: translateX(-5px); }
-          72%     { transform: translateX(5px); }
+          0%,100% { transform:translateX(0); }
+          18%     { transform:translateX(-8px); }
+          36%     { transform:translateX(8px); }
+          54%     { transform:translateX(-5px); }
+          72%     { transform:translateX(5px); }
         }
-        .lp-shake { animation: lp-shake .55s ease-out; }
+        .lp-shake { animation:lp-shake .55s ease-out; }
+
+        /* Mobile thumbnail strip (shown below card) */
+        @media (max-width: 1023px) {
+          .lp-mob-thumbs-strip {
+            display: flex; gap: .5rem; overflow-x: auto;
+            padding: .75rem 1.25rem 1.25rem;
+            scrollbar-width: none;
+          }
+          .lp-mob-thumbs-strip::-webkit-scrollbar { display: none; }
+        }
       `}</style>
+
+      {/* Mobile thumbnail strip below card */}
+      <div
+        className="lp-mob-thumbs-strip"
+        style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0,
+          zIndex: 20, display: 'none',
+        }}
+      >
+        {/* Shown via CSS on mobile only */}
+      </div>
     </div>
   );
-};
-
-export default LoginPage;
+}
