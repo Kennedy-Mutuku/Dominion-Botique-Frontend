@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   TrendingUp, TrendingDown, Package, ShoppingCart, DollarSign,
   BarChart2, LogOut, Calendar, RefreshCw, LayoutDashboard, Users,
   FileText, Scissors, Archive, ArrowRightLeft, PieChart as PieChartIcon,
-  Search
+  Search, Menu, X
 } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -32,6 +32,39 @@ const AdminDashboard = () => {
   const [sales, setSales] = useState([]);
   const [salesSearch, setSalesSearch] = useState('');
   const [stockSearch, setStockSearch] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const quickLinks = [
+    { label: 'Overview', id: 'overview' },
+    { label: 'Profit & Loss', id: 'profit-loss' },
+    { label: 'Top Products', id: 'top-products' },
+    { label: 'Recent Sales', id: 'recent-sales' },
+    { label: 'Current Stock', id: 'current-stock' },
+  ];
+
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    setIsMenuOpen(false);
+  };
+
+  const salesScrollRef = useRef(null);
+  const stockScrollRef = useRef(null);
+
+  const handleBackgroundClick = (e) => {
+    // Check if the click was outside the scrollable areas
+    const clickedInsideSales = salesScrollRef.current && salesScrollRef.current.contains(e.target);
+    const clickedInsideStock = stockScrollRef.current && stockScrollRef.current.contains(e.target);
+
+    if (!clickedInsideSales && salesScrollRef.current) {
+      salesScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    if (!clickedInsideStock && stockScrollRef.current) {
+      stockScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   const loadData = useCallback(() => {
     const s = localStorage.getItem('lucy_stock');
@@ -160,98 +193,134 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f3f4f6] flex flex-col text-slate-800 font-sans">
+    <div className="md:h-screen md:overflow-hidden min-h-screen bg-slate-50 flex flex-col font-sans" onClick={handleBackgroundClick}>
       
       {/* Top Header */}
-      <header className="h-16 bg-white shadow-sm flex items-center justify-between px-6 sticky top-0 z-40">
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">
-            <img src={logo} alt="Logo" className="h-5 w-auto brightness-0 invert" />
+      <header className="bg-white shadow-sm flex flex-wrap items-center justify-between px-4 sm:px-6 py-3 sm:py-0 sm:h-16 sticky top-0 z-40 gap-4">
+        {/* Logo & Title */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)} 
+            className="p-1.5 sm:p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
+          >
+            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+          
+          <div className="h-9 sm:h-11 flex items-center justify-center shrink-0">
+            <img src={logo} alt="Logo" className="h-full w-auto object-contain" />
           </div>
-          <h2 className="text-xl font-bold text-slate-800 tracking-tight hidden sm:block">Admin Overview</h2>
+          <div className="flex flex-col">
+            <h1 className="text-[17px] sm:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-500 tracking-tight leading-none">
+              Nyakoe Fassions
+            </h1>
+            <p className="text-[9px] sm:text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] mt-1">
+              Admin Portal
+            </p>
+          </div>
         </div>
         
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs shadow-inner">
-            <Calendar size={14} className="text-slate-400" />
+        {/* Right side controls */}
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
+          {/* Date Picker */}
+          <div className="flex items-center gap-1 sm:gap-2 bg-slate-50 border border-slate-200 rounded-lg px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs shadow-inner flex-1 sm:flex-none justify-center">
+            <Calendar size={14} className="text-slate-400 hidden sm:block" />
             <input
               type="date" value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="bg-transparent text-slate-700 font-semibold focus:outline-none w-[105px]"
+              className="bg-transparent text-slate-700 font-semibold focus:outline-none w-[90px] sm:w-[105px]"
             />
             <span className="text-slate-300">-</span>
             <input
               type="date" value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="bg-transparent text-slate-700 font-semibold focus:outline-none w-[105px]"
+              className="bg-transparent text-slate-700 font-semibold focus:outline-none w-[90px] sm:w-[105px]"
             />
           </div>
           
-          <button
-            onClick={loadData}
-            title="Refresh"
-            className="p-2 text-slate-400 hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50"
-          >
-            <RefreshCw size={18} />
-          </button>
-          
-          <div className="h-8 w-px bg-slate-200 mx-1" />
-          
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-slate-700 leading-tight">Admin User</p>
-                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">Nyakoe Fassions</p>
-              </div>
-              <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 border border-blue-200 flex items-center justify-center text-sm font-black shadow-sm">
-                A
-              </div>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <button
+              onClick={loadData}
+              title="Refresh"
+              className="p-1.5 sm:p-2 text-slate-400 hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50"
+            >
+              <RefreshCw size={16} />
+            </button>
+            
+            <div className="hidden sm:block h-8 w-px bg-slate-200 mx-1" />
+            
+            <div className="text-right hidden sm:block">
+              <p className="text-sm font-bold text-slate-700 leading-tight">Admin User</p>
+              <p className="text-[10px] font-bold text-emerald-500 flex items-center justify-end gap-1 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                ONLINE
+              </p>
+            </div>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-blue-100 text-blue-600 border border-blue-200 flex items-center justify-center text-sm font-black shadow-sm shrink-0">
+              A
             </div>
             
             <button
               onClick={handleLogout}
               title="Sign Out"
-              className="p-2 text-rose-500 hover:text-white transition-colors rounded-lg hover:bg-rose-500 bg-rose-50 border border-rose-100"
+              className="p-1.5 sm:p-2 text-rose-500 hover:text-white transition-colors rounded-lg hover:bg-rose-500 bg-rose-50 border border-rose-100"
             >
-              <LogOut size={18} />
+              <LogOut size={16} />
             </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {isMenuOpen && (
+          <div className="absolute top-full left-0 w-56 mt-2 ml-4 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 py-2 animate-in fade-in slide-in-from-top-2">
+            <div className="px-4 py-2 border-b border-slate-50 mb-1">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Quick Links</p>
+            </div>
+            {quickLinks.map(link => (
+              <button
+                key={link.id}
+                onClick={() => scrollToSection(link.id)}
+                className="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center justify-between"
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
+        )}
       </header>
 
       {/* Dashboard Content */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 px-4 sm:px-8 py-4 sm:py-6 w-full flex flex-col md:overflow-hidden min-h-0">
           
           {/* Top Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div id="overview" className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6 shrink-0 scroll-mt-24">
             {topCards.map((card, i) => (
-              <div key={i} className={`${card.bg} rounded-2xl p-6 text-white shadow-md relative overflow-hidden flex flex-col justify-between h-32 transform transition-transform hover:-translate-y-1`}>
+              <div key={i} className={`${card.bg} rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-md relative overflow-hidden flex flex-col justify-between h-24 sm:h-32 transform transition-transform hover:-translate-y-1`}>
                 <div className="relative z-10">
-                  <h3 className="text-3xl font-black mb-1 drop-shadow-sm">{card.value}</h3>
-                  <p className="text-sm font-medium opacity-90">{card.label}</p>
+                  <h3 className="text-lg sm:text-3xl font-black mb-0.5 sm:mb-1 drop-shadow-sm leading-tight">{card.value}</h3>
+                  <p className="text-[10px] sm:text-sm font-medium opacity-90">{card.label}</p>
                 </div>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 opacity-20 scale-75 sm:scale-100 origin-right">
                   {card.icon}
                 </div>
-                <div className="absolute -right-4 -top-8 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl" />
+                <div className="absolute -right-4 -top-8 w-24 h-24 sm:w-32 sm:h-32 bg-white opacity-10 rounded-full blur-2xl" />
               </div>
             ))}
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-6 mb-6">
+          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6 shrink-0">
             
             {/* Profit & Loss Trend */}
-            <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-              <h3 className="text-sm font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <div id="profit-loss" className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-6 scroll-mt-24">
+              <h3 className="text-sm font-bold text-slate-800 mb-4 sm:mb-6 flex items-center gap-2">
                 <BarChart2 size={18} className="text-blue-500" />
                 Profit & Loss Trend
               </h3>
               {trendData.length === 0 ? (
-                <div className="h-[280px] flex items-center justify-center text-slate-400 text-sm bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                <div className="h-[200px] sm:h-[280px] flex items-center justify-center text-slate-400 text-sm bg-slate-50 rounded-xl border border-dashed border-slate-200">
                   No data in this date range
                 </div>
               ) : (
-                <div className="h-[280px]">
+                <div className="h-[200px] sm:h-[280px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={trendData.map(d => ({ ...d, profit: d.profit, loss: d.revenue - d.profit }))}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
@@ -268,17 +337,17 @@ const AdminDashboard = () => {
             </div>
 
             {/* Top Products (Pie Chart) */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-              <h3 className="text-sm font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <div id="top-products" className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-6 scroll-mt-24">
+              <h3 className="text-sm font-bold text-slate-800 mb-4 sm:mb-6 flex items-center gap-2">
                 <PieChartIcon size={18} className="text-emerald-500" />
                 Top Products by Revenue
               </h3>
               {topProducts.length === 0 ? (
-                <div className="h-[280px] flex items-center justify-center text-slate-400 text-sm bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                <div className="h-[200px] sm:h-[280px] flex items-center justify-center text-slate-400 text-sm bg-slate-50 rounded-xl border border-dashed border-slate-200">
                   No data
                 </div>
               ) : (
-                <div className="h-[280px] relative">
+                <div className="h-[200px] sm:h-[280px] relative">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -303,28 +372,29 @@ const AdminDashboard = () => {
           </div>
 
           {/* Tables Row */}
-          <div className="grid lg:grid-cols-2 gap-6 pb-8">
+          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 flex-1 min-h-0 pb-4">
             
             {/* Recent Sales Table */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+            <div id="recent-sales" className="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-[300px] scroll-mt-24">
+              <div className="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between shrink-0 gap-3">
                 <h3 className="text-sm font-bold text-slate-800">Recent Sales</h3>
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     placeholder="Search sales..."
                     value={salesSearch}
                     onChange={(e) => setSalesSearch(e.target.value)}
-                    className="pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm w-48 transition-all"
+                    onBlur={() => setSalesSearch('')}
+                    className="pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm w-full sm:w-48 transition-all"
                   />
                 </div>
               </div>
               {recentSales.length === 0 ? (
-                <div className="p-10 text-center text-slate-400 text-sm">No sales in this date range</div>
+                <div className="p-10 text-center text-slate-400 text-sm flex-1">No sales in this date range</div>
               ) : (
-                <div className="divide-y divide-slate-100 max-h-[400px] overflow-y-auto p-2">
-                  <table className="w-full text-left border-collapse">
+                <div ref={salesScrollRef} className="flex-1 overflow-auto p-2">
+                  <table className="w-full text-left border-collapse min-w-[360px]">
                     <thead>
                       <tr>
                         <th className="pl-4 pr-2 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 w-8">#</th>
@@ -366,25 +436,26 @@ const AdminDashboard = () => {
             </div>
 
             {/* Current Stock Table */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+            <div id="current-stock" className="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-[300px] scroll-mt-24">
+              <div className="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between shrink-0 gap-3">
                 <h3 className="text-sm font-bold text-slate-800">Current Stock</h3>
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     placeholder="Search stock..."
                     value={stockSearch}
                     onChange={(e) => setStockSearch(e.target.value)}
-                    className="pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm w-48 transition-all"
+                    onBlur={() => setStockSearch('')}
+                    className="pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm w-full sm:w-48 transition-all"
                   />
                 </div>
               </div>
               {stock.length === 0 ? (
-                <div className="p-10 text-center text-slate-400 text-sm">No stock added yet</div>
+                <div className="p-10 text-center text-slate-400 text-sm flex-1">No stock added yet</div>
               ) : (
-                <div className="divide-y divide-slate-100 max-h-[400px] overflow-y-auto p-2">
-                  <table className="w-full text-left border-collapse">
+                <div ref={stockScrollRef} className="flex-1 overflow-auto p-2">
+                  <table className="w-full text-left border-collapse min-w-[360px]">
                     <thead>
                       <tr>
                         <th className="pl-4 pr-2 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 w-8">#</th>
