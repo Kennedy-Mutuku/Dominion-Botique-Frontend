@@ -7,7 +7,6 @@ import logo from '../assets/logo bq.png';
 // ── All boutique photos ──────────────────────────────────────────────
 import i_dera1     from '../assets/dera1.jpg';
 import i_ladies    from '../assets/ladies.jpg';
-import i_men10     from '../assets/men10.jpg';
 import i_handbags  from '../assets/handbags.jpg';
 import i_ladies4   from '../assets/ladies4.jpg';
 import i_men6      from '../assets/men6.jpg';
@@ -37,7 +36,6 @@ import i_ladies9   from '../assets/ladies9.jpg';
 const SLIDES = [
   { img: i_dera1,     cat: 'Designer Collection', name: 'Evening Elegance'  },
   { img: i_ladies,    cat: 'Ladies Fashion',       name: 'New Arrivals'      },
-  { img: i_men10,     cat: 'Menswear',             name: 'Premium Suits'     },
   { img: i_handbags,  cat: 'Accessories',           name: 'Handbag Edit'      },
   { img: i_ladies4,   cat: 'Ladies Fashion',        name: 'Casual Chic'       },
   { img: i_men6,      cat: 'Menswear',              name: 'Smart Casual'      },
