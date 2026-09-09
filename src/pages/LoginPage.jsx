@@ -428,6 +428,7 @@ export default function LoginPage() {
 
       {/* ══ Styles ══ */}
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&display=swap');
 
         /* ─────────────────────────────────────────────────────────
            ROOT
@@ -578,25 +579,35 @@ export default function LoginPage() {
           border-bottom: 1px solid rgba(255,255,255,.05);
         }
         .lp-brand-logo {
-          height: 44px; width: auto;
-          filter: brightness(0) invert(1); opacity: .80;
-          margin-bottom: .55rem;
+          height: 62px; width: auto;
+          filter: invert(1) drop-shadow(0 0 14px rgba(244,63,94,.55));
+          margin-bottom: .75rem;
         }
         .lp-brand-rule {
-          display: flex; align-items: center; gap: .4rem; margin-bottom: .45rem;
+          display: flex; align-items: center; gap: .55rem; margin-bottom: .6rem;
         }
-        .lp-rl { display: block; width: 26px; height: 1px; background: rgba(251,113,133,.45); }
-        .lp-heart { color: #fb7185; fill: #fb7185; flex-shrink: 0; }
+        .lp-rl {
+          display: block; flex: 1; max-width: 36px; height: 1px;
+          background: linear-gradient(to right, transparent, rgba(244,63,94,.6));
+        }
+        .lp-rl + .lp-heart + .lp-rl {
+          background: linear-gradient(to left, transparent, rgba(244,63,94,.6));
+        }
+        .lp-heart { color: #f43f5e; fill: #f43f5e; flex-shrink: 0; }
         .lp-brand-title {
-          font-family: Georgia, "Times New Roman", serif;
-          font-size: clamp(.95rem, 1.4vw, 1.25rem);
-          font-weight: 300; letter-spacing: .22em;
-          text-transform: uppercase; color: rgba(255,255,255,.90);
-          text-align: center; margin-bottom: .25rem;
+          font-family: 'Cinzel', Georgia, serif;
+          font-size: clamp(1rem, 1.45vw, 1.3rem);
+          font-weight: 700; letter-spacing: .28em;
+          text-transform: uppercase;
+          background: linear-gradient(135deg, #ffffff 0%, #fda4af 60%, #e879f9 100%);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+          background-clip: text;
+          text-align: center; margin-bottom: .3rem;
+          filter: drop-shadow(0 2px 12px rgba(244,63,94,.3));
         }
         .lp-brand-sub {
-          font-size: 8px; font-weight: 700; letter-spacing: .38em;
-          text-transform: uppercase; color: rgba(255,255,255,.28);
+          font-size: 7.5px; font-weight: 700; letter-spacing: .55em;
+          text-transform: uppercase; color: rgba(255,255,255,.35);
           text-align: center;
         }
 
