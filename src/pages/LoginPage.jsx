@@ -185,12 +185,6 @@ export default function LoginPage() {
           ))}
         </div>
 
-        {/* Slide counter */}
-        <div className="lp-counter" style={{ opacity: mounted ? 1 : 0, transition: 'opacity .8s .3s' }}>
-          <span className="lp-cnt-n">{counter}</span>
-          <span className="lp-cnt-s"> / </span>
-          <span className="lp-cnt-t">{String(N).padStart(2, '0')}</span>
-        </div>
       </div>
 
       {/* ── RIGHT: Black panel — brand + login + thumbs ── */}
