@@ -174,15 +174,6 @@ export default function LoginPage() {
         <div className="lp-ov-bot-left" />
         <div className="lp-ov-ledge" />
 
-        {/* Labels — bottom of each visible photo */}
-        <div key={labelsKey} className="lp-labels">
-          {labels.map((s, i) => (
-            <div key={i} className="lp-label" style={{ animationDelay: `${i * 0.08}s` }}>
-              <span className="lp-ldash" />
-              <span className="lp-lname">{s.name}</span>
-            </div>
-          ))}
-        </div>
 
       </div>
 
