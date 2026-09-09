@@ -58,9 +58,9 @@ const LandingPage = () => {
       </button>
       <Header />
       
-      <main className="pt-[140px] md:pt-[150px]">
+      <main className="pt-[168px] md:pt-[178px]">
         {/* Hero Section with Cinematic Background */}
-        <section className="relative min-h-[calc(100vh-140px)] md:min-h-[calc(100vh-150px)] flex flex-col items-center justify-center overflow-hidden py-10 px-4">
+        <section className="relative min-h-[calc(100vh-168px)] md:min-h-[calc(100vh-178px)] flex flex-col items-center justify-center overflow-hidden py-10 px-4">
           <VideoBackground />
           
           <div className="relative z-20 flex flex-col items-center w-full max-w-5xl">

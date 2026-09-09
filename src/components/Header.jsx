@@ -1,11 +1,30 @@
 import React from 'react';
 import { Heart } from 'lucide-react';
 import logo from '../assets/logo bq.png';
+import dominionLogo from '../assets/dominion softwares main logo.png';
 
 const Header = () => {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[60] bg-white border-b border-rose-50 py-3 shadow-sm">
-      <div className="flex flex-col items-center justify-center relative max-w-5xl mx-auto px-4">
+    <nav className="fixed top-0 left-0 right-0 z-[60] bg-white border-b border-rose-50 shadow-sm">
+
+      {/* ── Powered By strip ── */}
+      <div className="w-full bg-slate-950 flex items-center justify-center gap-3 px-4 py-[5px]">
+        <span className="text-[8px] uppercase font-bold text-white/35 tracking-[0.32em]">Powered By</span>
+        <span className="w-px h-3 bg-white/10" />
+        <a
+          href="https://dominionsoftwares.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-[0.28em] text-white/65 hover:text-rose-300 transition-colors duration-200"
+        >
+          <img src={dominionLogo} alt="Dominion Softwares" className="h-[14px] w-auto brightness-0 invert opacity-75" />
+          Dominion Softwares
+        </a>
+        <span className="text-white/15 hidden sm:inline">·</span>
+        <span className="text-[8px] uppercase font-bold text-white/35 tracking-[0.28em] hidden sm:inline">Tel: 0740881485</span>
+      </div>
+
+      <div className="flex flex-col items-center justify-center relative max-w-5xl mx-auto px-4 py-3">
         
         {/* Top Decoration & Logo */}
         <div className="flex items-center justify-center w-full gap-3 md:gap-6 mb-2">
