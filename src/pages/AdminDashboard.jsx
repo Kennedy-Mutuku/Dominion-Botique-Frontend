@@ -5,7 +5,7 @@ import {
   TrendingUp, TrendingDown, Package, ShoppingCart, DollarSign,
   BarChart2, LogOut, Calendar, RefreshCw, LayoutDashboard, Users,
   FileText, Scissors, Archive, ArrowRightLeft, PieChart as PieChartIcon,
-  Search, Menu, X
+  Search, Menu, X, Bell
 } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -33,6 +33,23 @@ const AdminDashboard = () => {
   const [salesSearch, setSalesSearch] = useState('');
   const [stockSearch, setStockSearch] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    loadData();
+    setTimeout(() => setIsRefreshing(false), 500); // 500ms spin for visual feedback
+  };
+
+  const markAllRead = () => {
+    const updated = notifications.map(n => ({ ...n, isRead: true }));
+    setNotifications(updated);
+    localStorage.setItem('lucy_notifications', JSON.stringify(updated));
+  };
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const quickLinks = [
     { label: 'Overview', id: 'overview' },
@@ -69,8 +86,70 @@ const AdminDashboard = () => {
   const loadData = useCallback(() => {
     const s = localStorage.getItem('lucy_stock');
     const sl = localStorage.getItem('lucy_sales');
-    setStock(s ? JSON.parse(s) : []);
-    setSales(sl ? JSON.parse(sl) : []);
+    
+    const parsedStock = s ? JSON.parse(s) : [];
+    const parsedSales = sl ? JSON.parse(sl) : [];
+    
+    setStock(parsedStock);
+    setSales(parsedSales);
+
+    // Notification Engine
+    const lastSalesStr = localStorage.getItem('lucy_last_sales_count');
+    const lastStockStr = localStorage.getItem('lucy_last_stock_count');
+    let newNotifs = [];
+
+    // Check for new sales
+    if (!lastSalesStr) {
+      localStorage.setItem('lucy_last_sales_count', parsedSales.length.toString());
+    } else {
+      const lastSalesCount = parseInt(lastSalesStr, 10);
+      if (parsedSales.length > lastSalesCount) {
+        const addedSales = parsedSales.slice(lastSalesCount);
+        addedSales.forEach(sale => {
+          newNotifs.unshift({
+            id: Date.now() + Math.random(),
+            type: 'sale',
+            title: 'New Sale Recorded',
+            message: `${sale.name || sale.productName || 'A product'} sold for KSh ${sale.soldPrice || 0}`,
+            time: new Date().toISOString(),
+            isRead: false
+          });
+        });
+        localStorage.setItem('lucy_last_sales_count', parsedSales.length.toString());
+      }
+    }
+
+    // Check for new stock
+    if (!lastStockStr) {
+      localStorage.setItem('lucy_last_stock_count', parsedStock.length.toString());
+    } else {
+      const lastStockCount = parseInt(lastStockStr, 10);
+      if (parsedStock.length > lastStockCount) {
+        const addedStock = parsedStock.slice(lastStockCount);
+        addedStock.forEach(item => {
+          newNotifs.unshift({
+            id: Date.now() + Math.random(),
+            type: 'stock',
+            title: 'New Stock Added',
+            message: `${item.quantity || 0}x ${item.name || item.productName || 'product'} added`,
+            time: new Date().toISOString(),
+            isRead: false
+          });
+        });
+        localStorage.setItem('lucy_last_stock_count', parsedStock.length.toString());
+      }
+    }
+
+    // Update notifications in state and local storage
+    if (newNotifs.length > 0) {
+      const existingNotifs = JSON.parse(localStorage.getItem('lucy_notifications') || '[]');
+      const combined = [...newNotifs, ...existingNotifs].slice(0, 50); // Keep latest 50
+      localStorage.setItem('lucy_notifications', JSON.stringify(combined));
+      setNotifications(combined);
+    } else {
+      setNotifications(JSON.parse(localStorage.getItem('lucy_notifications') || '[]'));
+    }
+
   }, []);
 
   useEffect(() => {
@@ -114,8 +193,7 @@ const AdminDashboard = () => {
     return acc;
   }, {});
   const trendData = Object.values(salesByDate)
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .map(d => ({ ...d, date: d.date.slice(5) }));
+    .sort((a, b) => a.date.localeCompare(b.date));
 
   // Top 5 products by revenue
   const productRevenue = filteredSales.reduce((acc, s) => {
@@ -238,12 +316,58 @@ const AdminDashboard = () => {
           </div>
           
           <div className="flex items-center gap-2 sm:gap-4">
+            
+            {/* Notification Bell */}
+            <div className="relative">
+              <button
+                onClick={() => setIsNotifOpen(!isNotifOpen)}
+                className="relative p-1.5 sm:p-2 text-slate-400 hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50"
+              >
+                <Bell size={18} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-rose-500 text-[8px] font-bold text-white shadow ring-2 ring-white">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+              
+              {isNotifOpen && (
+                <div className="absolute top-full right-0 mt-2 w-72 sm:w-80 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+                  <div className="px-4 py-3 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
+                    <h3 className="text-xs font-bold text-slate-700 uppercase tracking-widest">Notifications</h3>
+                    {unreadCount > 0 && (
+                      <button onClick={markAllRead} className="text-[10px] font-bold text-blue-600 hover:text-blue-700 hover:underline">
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+                  <div className="max-h-80 overflow-y-auto divide-y divide-slate-50">
+                    {notifications.length === 0 ? (
+                      <div className="p-6 text-center text-slate-400 text-xs font-medium">
+                        You're all caught up!
+                      </div>
+                    ) : (
+                      notifications.map(n => (
+                        <div key={n.id} className={`p-4 transition-colors hover:bg-slate-50 flex items-start gap-3 ${!n.isRead ? 'bg-blue-50/30' : ''}`}>
+                          <div className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${!n.isRead ? 'bg-blue-500 animate-pulse' : 'bg-slate-200'}`} />
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-xs ${!n.isRead ? 'font-bold text-slate-800' : 'font-semibold text-slate-600'}`}>{n.title}</p>
+                            <p className="text-[11px] text-slate-500 mt-0.5 leading-snug truncate">{n.message}</p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <button
-              onClick={loadData}
+              onClick={handleRefresh}
               title="Refresh"
               className="p-1.5 sm:p-2 text-slate-400 hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50"
             >
-              <RefreshCw size={16} />
+              <RefreshCw size={16} className={isRefreshing ? "animate-spin text-blue-600" : ""} />
             </button>
             
             <div className="hidden sm:block h-8 w-px bg-slate-200 mx-1" />
@@ -324,9 +448,17 @@ const AdminDashboard = () => {
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={trendData.map(d => ({ ...d, profit: d.profit, loss: d.revenue - d.profit }))}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                      <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }} dy={10} />
+                      <XAxis dataKey="date" tickFormatter={(val) => typeof val === 'string' && val.length >= 10 ? val.slice(5) : val} axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }} dy={10} />
                       <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }} dx={-10} tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
-                      <Tooltip {...tooltipStyle} formatter={(v, name) => [`KSh ${v.toLocaleString()}`, name]} />
+                      <Tooltip 
+                        {...tooltipStyle} 
+                        labelStyle={{ fontWeight: 'bold', color: '#0f172a', marginBottom: '8px', borderBottom: '1px solid #f1f5f9', paddingBottom: '4px' }}
+                        labelFormatter={(label) => {
+                          const d = new Date(label);
+                          return isNaN(d.getTime()) ? label : d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
+                        }}
+                        formatter={(v, name) => [`KSh ${v.toLocaleString()}`, name]} 
+                      />
                       <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: 500, paddingTop: '10px' }} />
                       <Line type="monotone" dataKey="profit" name="Profit" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
                       <Line type="monotone" dataKey="loss" name="Loss" stroke="#ef4444" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
