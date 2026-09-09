@@ -75,9 +75,15 @@ export default function LoginPage() {
   const [startIdx,  setStartIdx]  = useState(0);
   const [slideKey,  setSlideKey]  = useState(0);
   const [labelsKey, setLabelsKey] = useState(0);
-  const [thumbsKey, setThumbsKey] = useState(0);
   const [progKey,   setProgKey]   = useState(0);
-  const sliding = useRef(false);
+  const sliding     = useRef(false);
+  const startIdxRef = useRef(0);   // stale-closure-safe copy of startIdx
+
+  /* ── Thumb crossfade state ── */
+  const mkThumbs = (idx) => [2,3,4,5].map(i => SLIDES[(idx+i)%N]);
+  const [currThumbs, setCurrThumbs] = useState(() => mkThumbs(0));
+  const [prevThumbs, setPrevThumbs] = useState(null);
+  const [thumbFadeKey, setThumbFadeKey] = useState(0);
 
   /* ── Login state ── */
   const [step,     setStep]     = useState(1);
@@ -97,11 +103,22 @@ export default function LoginPage() {
     setSlideKey(k => k + 1);                       // fire strip slide
 
     setTimeout(() => {
-      setStartIdx(i  => (i  + 1) % N);
-      setProgKey (p  => p  + 1);
-      setLabelsKey(l => l  + 1);
-      setThumbsKey(t => t  + 1);
+      const curIdx = startIdxRef.current;
+      const newIdx = (curIdx + 1) % N;
+      startIdxRef.current = newIdx;
+
+      // Thumb crossfade: swap prev/curr
+      setPrevThumbs(mkThumbs(curIdx));
+      setCurrThumbs(mkThumbs(newIdx));
+      setThumbFadeKey(k => k + 1);
+
+      setStartIdx(newIdx);
+      setProgKey (p => p + 1);
+      setLabelsKey(l => l + 1);
       sliding.current = false;
+
+      // Clear prev layer after animation finishes
+      setTimeout(() => setPrevThumbs(null), 1050);
     }, SLIDE_MS);
   }, []);
 
@@ -125,14 +142,8 @@ export default function LoginPage() {
   };
 
   /* ── Derived photo sets ── */
-  // Strip:   3 panels (left 2 visible + 1 incoming during slide)
   const strip  = [0, 1, 2].map(i => SLIDES[(startIdx + i) % N]);
-  // Labels:  the 2 currently visible large photos
   const labels = [0, 1].map(i => SLIDES[(startIdx + i) % N]);
-  // Thumbs: next 4 photos queued up
-  const thumbs = [2, 3, 4, 5].map(i => SLIDES[(startIdx + i) % N]);
-
-  const counter = String(startIdx + 1).padStart(2, '0');
 
   /* ── Mobile: single photo crossfade ── */
   const [mobCurr, setMobCurr] = useState(0);
@@ -263,10 +274,24 @@ export default function LoginPage() {
         >
           <p className="lp-thumbs-label">Up Next</p>
           <div className="lp-thumbs">
-            {thumbs.map((s, i) => (
-              <div key={`${thumbsKey}-${i}`} className="lp-thumb"
-                style={{ animationDelay: `${(3 - i) * 0.08}s` }}>
-                <img src={s.img} alt={s.name} className="lp-thumb-img" />
+            {currThumbs.map((s, i) => (
+              <div key={i} className="lp-thumb">
+                {/* Old photo — fades out */}
+                {prevThumbs && (
+                  <img
+                    key={`out-${thumbFadeKey}-${i}`}
+                    src={prevThumbs[i].img} alt=""
+                    className="lp-thumb-img lp-img-out"
+                    style={{ animationDelay: `${(3-i)*0.07}s` }}
+                  />
+                )}
+                {/* New photo — fades in */}
+                <img
+                  key={`in-${thumbFadeKey}-${i}`}
+                  src={s.img} alt={s.name}
+                  className="lp-thumb-img lp-img-in"
+                  style={{ animationDelay: `${(3-i)*0.07}s` }}
+                />
                 <div className="lp-thumb-veil">
                   <span className="lp-thumb-name">{s.name}</span>
                 </div>
@@ -362,12 +387,22 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Mobile thumbnails — smooth crossfade */}
+        {/* Mobile thumbnails — crossfade */}
         <div className="lp-mob-thumbs">
-          {thumbs.map((s, i) => (
-            <div key={`mt-${thumbsKey}-${i}`} className="lp-mob-thumb"
-              style={{ animationDelay: `${(3 - i) * 0.07}s` }}>
-              <img src={s.img} alt={s.name} className="lp-thumb-img" />
+          {currThumbs.map((s, i) => (
+            <div key={i} className="lp-mob-thumb">
+              {prevThumbs && (
+                <img key={`mout-${thumbFadeKey}-${i}`}
+                  src={prevThumbs[i].img} alt=""
+                  className="lp-thumb-img lp-img-out"
+                  style={{ animationDelay: `${(3-i)*0.07}s` }}
+                />
+              )}
+              <img key={`min-${thumbFadeKey}-${i}`}
+                src={s.img} alt={s.name}
+                className="lp-thumb-img lp-img-in"
+                style={{ animationDelay: `${(3-i)*0.07}s` }}
+              />
               <div className="lp-thumb-veil">
                 <span className="lp-thumb-name">{s.name}</span>
               </div>
@@ -594,19 +629,18 @@ export default function LoginPage() {
           overflow: hidden; aspect-ratio: 3/4;
           box-shadow: 0 4px 16px rgba(0,0,0,.55);
           border: 1px solid rgba(255,255,255,.06);
-          animation: lp-thumb-fade 0.9s cubic-bezier(.16,1,.3,1) both;
         }
-        @keyframes lp-thumb-fade {
-          from { opacity: 0; transform: scale(0.95); }
-          to   { opacity: 1; transform: scale(1); }
-        }
+        /* Crossfade keyframes — shared by thumbs + mobile thumbs */
+        @keyframes lp-img-fadein  { from{opacity:0} to{opacity:1} }
+        @keyframes lp-img-fadeout { from{opacity:1} to{opacity:0} }
+        .lp-img-in  { z-index:2; animation: lp-img-fadein  1s ease both; }
+        .lp-img-out { z-index:1; animation: lp-img-fadeout 1s ease both; }
         .lp-thumb-img {
+          position: absolute; inset: 0;
           width: 100%; height: 100%;
           object-fit: cover; object-position: top center;
-          transition: transform .4s ease;
           display: block;
         }
-        .lp-thumb:hover .lp-thumb-img { transform: scale(1.07); }
         .lp-thumb-veil {
           position: absolute; inset: 0;
           background: linear-gradient(to top, rgba(0,0,0,.78) 0%, transparent 55%);
