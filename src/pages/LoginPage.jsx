@@ -176,19 +176,19 @@ export default function LoginPage() {
 
         {currPanels.map((s, i) => (
           <div key={i} className="lp-panel">
-            {/* Old photo fades out */}
+            {/* Old photo fades out — continuing the wave from thumbs (thumbs end at 0.42s) */}
             {prevPanels && (
               <img key={`pout-${panelFadeKey}-${i}`}
                 src={prevPanels[i].img} alt=""
                 className="lp-panel-img lp-img-out"
-                style={{ animationDelay: `${(1-i)*0.3}s` }}
+                style={{ animationDelay: `${0.56 + (1-i)*0.14}s` }}
               />
             )}
-            {/* New photo fades in after out */}
+            {/* New photo fades in after brief black gap */}
             <img key={`pin-${panelFadeKey}-${i}`}
               src={s.img} alt={s.name}
               className="lp-panel-img lp-img-in"
-              style={{ animationDelay: `${(1-i)*0.3 + 0.42}s` }}
+              style={{ animationDelay: `${0.56 + (1-i)*0.14 + 0.42}s` }}
             />
           </div>
         ))}
@@ -291,21 +291,21 @@ export default function LoginPage() {
           <div className="lp-thumbs">
             {currThumbs.map((s, i) => (
               <div key={i} className="lp-thumb">
-                {/* Old photo — fades out first */}
+                {/* Old photo — wave starts right (i=3), flows left */}
                 {prevThumbs && (
                   <img
                     key={`out-${thumbFadeKey}-${i}`}
                     src={prevThumbs[i].img} alt=""
                     className="lp-thumb-img lp-img-out"
-                    style={{ animationDelay: `${(3-i)*0.18}s` }}
+                    style={{ animationDelay: `${(3-i)*0.14}s` }}
                   />
                 )}
-                {/* New photo — fades in after out is mostly done */}
+                {/* New photo — fades in after brief black gap */}
                 <img
                   key={`in-${thumbFadeKey}-${i}`}
                   src={s.img} alt={s.name}
                   className="lp-thumb-img lp-img-in"
-                  style={{ animationDelay: `${(3-i)*0.18 + 0.42}s` }}
+                  style={{ animationDelay: `${(3-i)*0.14 + 0.42}s` }}
                 />
                 <div className="lp-thumb-veil">
                   <span className="lp-thumb-name">{s.name}</span>
@@ -410,13 +410,13 @@ export default function LoginPage() {
                 <img key={`mout-${thumbFadeKey}-${i}`}
                   src={prevThumbs[i].img} alt=""
                   className="lp-thumb-img lp-img-out"
-                  style={{ animationDelay: `${(3-i)*0.18}s` }}
+                  style={{ animationDelay: `${(3-i)*0.14}s` }}
                 />
               )}
               <img key={`min-${thumbFadeKey}-${i}`}
                 src={s.img} alt={s.name}
                 className="lp-thumb-img lp-img-in"
-                style={{ animationDelay: `${(3-i)*0.18 + 0.42}s` }}
+                style={{ animationDelay: `${(3-i)*0.14 + 0.42}s` }}
               />
               <div className="lp-thumb-veil">
                 <span className="lp-thumb-name">{s.name}</span>
@@ -640,11 +640,11 @@ export default function LoginPage() {
           box-shadow: 0 4px 16px rgba(0,0,0,.55);
           border: 1px solid rgba(255,255,255,.06);
         }
-        /* Crossfade keyframes — out first, then in */
+        /* Crossfade keyframes — out snaps fast, brief black, then in fades */
         @keyframes lp-img-fadein  { from{opacity:0} to{opacity:1} }
         @keyframes lp-img-fadeout { from{opacity:1} to{opacity:0} }
-        .lp-img-out { z-index:1; animation: lp-img-fadeout 0.55s ease both; }
-        .lp-img-in  { z-index:2; animation: lp-img-fadein  0.65s ease both; }
+        .lp-img-out { z-index:1; animation: lp-img-fadeout 0.38s ease-in  both; }
+        .lp-img-in  { z-index:2; animation: lp-img-fadein  0.70s ease-out both; }
         .lp-thumb-img {
           position: absolute; inset: 0;
           width: 100%; height: 100%;
