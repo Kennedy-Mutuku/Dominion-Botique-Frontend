@@ -117,8 +117,8 @@ export default function LoginPage() {
       setLabelsKey(l => l + 1);
       sliding.current = false;
 
-      // Clear prev layer after animation finishes
-      setTimeout(() => setPrevThumbs(null), 1050);
+      // Clear prev layer after longest animation finishes (~1.8s for rightmost box)
+      setTimeout(() => setPrevThumbs(null), 1900);
     }, SLIDE_MS);
   }, []);
 
@@ -276,21 +276,21 @@ export default function LoginPage() {
           <div className="lp-thumbs">
             {currThumbs.map((s, i) => (
               <div key={i} className="lp-thumb">
-                {/* Old photo — fades out */}
+                {/* Old photo — fades out first */}
                 {prevThumbs && (
                   <img
                     key={`out-${thumbFadeKey}-${i}`}
                     src={prevThumbs[i].img} alt=""
                     className="lp-thumb-img lp-img-out"
-                    style={{ animationDelay: `${(3-i)*0.07}s` }}
+                    style={{ animationDelay: `${(3-i)*0.18}s` }}
                   />
                 )}
-                {/* New photo — fades in */}
+                {/* New photo — fades in after out is mostly done */}
                 <img
                   key={`in-${thumbFadeKey}-${i}`}
                   src={s.img} alt={s.name}
                   className="lp-thumb-img lp-img-in"
-                  style={{ animationDelay: `${(3-i)*0.07}s` }}
+                  style={{ animationDelay: `${(3-i)*0.18 + 0.42}s` }}
                 />
                 <div className="lp-thumb-veil">
                   <span className="lp-thumb-name">{s.name}</span>
@@ -395,13 +395,13 @@ export default function LoginPage() {
                 <img key={`mout-${thumbFadeKey}-${i}`}
                   src={prevThumbs[i].img} alt=""
                   className="lp-thumb-img lp-img-out"
-                  style={{ animationDelay: `${(3-i)*0.07}s` }}
+                  style={{ animationDelay: `${(3-i)*0.18}s` }}
                 />
               )}
               <img key={`min-${thumbFadeKey}-${i}`}
                 src={s.img} alt={s.name}
                 className="lp-thumb-img lp-img-in"
-                style={{ animationDelay: `${(3-i)*0.07}s` }}
+                style={{ animationDelay: `${(3-i)*0.18 + 0.42}s` }}
               />
               <div className="lp-thumb-veil">
                 <span className="lp-thumb-name">{s.name}</span>
@@ -630,11 +630,11 @@ export default function LoginPage() {
           box-shadow: 0 4px 16px rgba(0,0,0,.55);
           border: 1px solid rgba(255,255,255,.06);
         }
-        /* Crossfade keyframes — shared by thumbs + mobile thumbs */
+        /* Crossfade keyframes — out first, then in */
         @keyframes lp-img-fadein  { from{opacity:0} to{opacity:1} }
         @keyframes lp-img-fadeout { from{opacity:1} to{opacity:0} }
-        .lp-img-in  { z-index:2; animation: lp-img-fadein  1s ease both; }
-        .lp-img-out { z-index:1; animation: lp-img-fadeout 1s ease both; }
+        .lp-img-out { z-index:1; animation: lp-img-fadeout 0.55s ease both; }
+        .lp-img-in  { z-index:2; animation: lp-img-fadein  0.65s ease both; }
         .lp-thumb-img {
           position: absolute; inset: 0;
           width: 100%; height: 100%;
