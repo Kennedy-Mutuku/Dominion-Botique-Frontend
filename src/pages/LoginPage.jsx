@@ -668,29 +668,31 @@ export default function LoginPage() {
         }
         .lp-ch { margin-bottom: 1.6rem; text-align: center; }
         .lp-eyebrow {
-          font-size: 8px; font-weight: 700; letter-spacing: .5em;
+          font-size: 9px; font-weight: 900; letter-spacing: .55em;
           text-transform: uppercase;
           background: linear-gradient(to right, #f43f5e, #e879f9);
           -webkit-background-clip: text; -webkit-text-fill-color: transparent;
           background-clip: text;
-          margin-bottom: .55rem; display: block;
+          margin-bottom: .6rem; display: block;
         }
         .lp-ctitle {
-          font-family: Georgia, serif; font-size: 1.7rem;
-          font-weight: 300; letter-spacing: .06em;
-          color: rgba(255,255,255,.95); margin-bottom: .35rem;
+          font-family: Georgia, serif; font-size: 2.1rem;
+          font-weight: 700; letter-spacing: .02em;
+          color: #ffffff; margin-bottom: .4rem;
+          text-shadow: 0 2px 20px rgba(244,63,94,.25);
         }
         .lp-csub {
-          font-size: 11px; color: rgba(255,255,255,.28);
-          letter-spacing: .04em;
+          font-size: 12px; font-weight: 500;
+          color: rgba(255,255,255,.55);
+          letter-spacing: .03em;
         }
         .lp-form { display:flex; flex-direction:column; gap:.85rem; }
         .lp-field { display:flex; flex-direction:column; }
         .lp-field-in { animation: lp-field-in .4s cubic-bezier(.16,1,.3,1); }
         @keyframes lp-field-in { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
         .lp-lbl {
-          font-size: 8px; font-weight:700; letter-spacing:.38em;
-          text-transform:uppercase; color:rgba(255,255,255,.30);
+          font-size: 9px; font-weight:800; letter-spacing:.4em;
+          text-transform:uppercase; color:rgba(255,255,255,.60);
           margin-bottom:.45rem; text-align: center;
         }
         .lp-iw { position:relative; display:flex; align-items:center; }
@@ -700,12 +702,12 @@ export default function LoginPage() {
         }
         .lp-iw:focus-within .lp-ii { color:#f43f5e; }
         .lp-i {
-          width:100%; padding:.75rem .9rem .75rem 2.5rem;
-          background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08);
-          border-radius:.72rem; color:rgba(255,255,255,.90); font-size:.875rem; outline:none;
+          width:100%; padding:.8rem .9rem .8rem 2.6rem;
+          background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14);
+          border-radius:.8rem; color:#ffffff; font-size:.95rem; font-weight:500; outline:none;
           transition:border-color .2s, background .2s, box-shadow .2s;
         }
-        .lp-i::placeholder { color:rgba(255,255,255,.16); }
+        .lp-i::placeholder { color:rgba(255,255,255,.28); font-weight:400; }
         .lp-i:focus {
           border-color:rgba(244,63,94,.5); background:rgba(255,255,255,.09);
           box-shadow:0 0 0 3px rgba(244,63,94,.10);
