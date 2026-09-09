@@ -129,8 +129,8 @@ export default function LoginPage() {
   const strip  = [0, 1, 2].map(i => SLIDES[(startIdx + i) % N]);
   // Labels:  the 2 currently visible large photos
   const labels = [0, 1].map(i => SLIDES[(startIdx + i) % N]);
-  // Thumbs: 5 photos — 4 visible + 1 entering from right (right-to-left conveyor)
-  const thumbs = [2, 3, 4, 5, 6].map(i => SLIDES[(startIdx + i) % N]);
+  // Thumbs: next 4 photos queued up
+  const thumbs = [2, 3, 4, 5].map(i => SLIDES[(startIdx + i) % N]);
 
   const counter = String(startIdx + 1).padStart(2, '0');
 
@@ -261,18 +261,17 @@ export default function LoginPage() {
           className="lp-thumbs-wrap"
           style={{ opacity: mounted ? 1 : 0, transition: 'opacity .8s ease .6s' }}
         >
-          <p className="lp-thumbs-label">Up Next ›</p>
-          <div className="lp-thumbs-outer">
-            <div key={thumbsKey} className="lp-thumbs-strip">
-              {thumbs.map((s, i) => (
-                <div key={i} className="lp-thumb">
-                  <img src={s.img} alt={s.name} className="lp-thumb-img" />
-                  <div className="lp-thumb-veil">
-                    <span className="lp-thumb-name">{s.name}</span>
-                  </div>
+          <p className="lp-thumbs-label">Up Next</p>
+          <div className="lp-thumbs">
+            {thumbs.map((s, i) => (
+              <div key={`${thumbsKey}-${i}`} className="lp-thumb"
+                style={{ animationDelay: `${(3 - i) * 0.08}s` }}>
+                <img src={s.img} alt={s.name} className="lp-thumb-img" />
+                <div className="lp-thumb-veil">
+                  <span className="lp-thumb-name">{s.name}</span>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -363,18 +362,17 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Mobile thumbnails — right-to-left conveyor strip */}
-        <div className="lp-mob-thumbs-outer">
-          <div key={`mt-${thumbsKey}`} className="lp-mob-thumbs-strip">
-            {thumbs.map((s, i) => (
-              <div key={i} className="lp-mob-thumb">
-                <img src={s.img} alt={s.name} className="lp-thumb-img" />
-                <div className="lp-thumb-veil">
-                  <span className="lp-thumb-name">{s.name}</span>
-                </div>
+        {/* Mobile thumbnails — smooth crossfade */}
+        <div className="lp-mob-thumbs">
+          {thumbs.map((s, i) => (
+            <div key={`mt-${thumbsKey}-${i}`} className="lp-mob-thumb"
+              style={{ animationDelay: `${(3 - i) * 0.07}s` }}>
+              <img src={s.img} alt={s.name} className="lp-thumb-img" />
+              <div className="lp-thumb-veil">
+                <span className="lp-thumb-name">{s.name}</span>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -588,31 +586,20 @@ export default function LoginPage() {
           text-transform: uppercase; color: rgba(255,255,255,.25);
           margin-bottom: .55rem; padding-left: .1rem;
         }
-        /* Outer clip — shows exactly 4 of the 5 thumbs */
-        .lp-thumbs-outer {
-          overflow: hidden;
-          width: 100%;
-        }
-        /* Strip — 5 equal panels, slides left by 1 panel on each advance */
-        .lp-thumbs-strip {
-          display: flex;
-          width: 125%; /* 5 thumbs × 20% = 100% of strip = 125% of container */
-          animation: lp-thumb-slide ${SLIDE_MS}ms cubic-bezier(.77,0,.18,1) forwards;
-        }
-        @keyframes lp-thumb-slide {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-20%); } /* shift left 1 of 5 panels */
+        .lp-thumbs {
+          display: flex; gap: .5rem;
         }
         .lp-thumb {
-          flex: 0 0 20%; /* 1/5 of strip = 1/4 of container */
-          padding-right: .5rem;
-          box-sizing: border-box;
-          position: relative; border-radius: .55rem;
+          flex: 1; position: relative; border-radius: .55rem;
           overflow: hidden; aspect-ratio: 3/4;
           box-shadow: 0 4px 16px rgba(0,0,0,.55);
           border: 1px solid rgba(255,255,255,.06);
+          animation: lp-thumb-fade 0.9s cubic-bezier(.16,1,.3,1) both;
         }
-        .lp-thumb:last-child { padding-right: 0; }
+        @keyframes lp-thumb-fade {
+          from { opacity: 0; transform: scale(0.95); }
+          to   { opacity: 1; transform: scale(1); }
+        }
         .lp-thumb-img {
           width: 100%; height: 100%;
           object-fit: cover; object-position: top center;
@@ -795,28 +782,19 @@ export default function LoginPage() {
           background: rgba(4,4,10,.65) !important;
         }
 
-        /* Mobile thumb outer clip */
-        .lp-mob-thumbs-outer {
+        /* Mobile thumb strip */
+        .lp-mob-thumbs {
           position: relative; z-index: 10;
-          overflow: hidden;
+          display: flex; gap: .45rem;
           padding: .5rem 1.1rem 1.25rem;
         }
-        /* Strip — 5 panels, shows 4, slides left by 1 */
-        .lp-mob-thumbs-strip {
-          display: flex;
-          width: 125%;
-          animation: lp-thumb-slide ${SLIDE_MS}ms cubic-bezier(.77,0,.18,1) forwards;
-        }
         .lp-mob-thumb {
-          flex: 0 0 20%;
-          padding-right: .45rem;
-          box-sizing: border-box;
-          border-radius: .5rem; overflow: hidden;
+          flex: 1; border-radius: .5rem; overflow: hidden;
           aspect-ratio: 2/3; position: relative;
           box-shadow: 0 4px 14px rgba(0,0,0,.5);
           border: 1px solid rgba(255,255,255,.08);
+          animation: lp-thumb-fade 0.9s cubic-bezier(.16,1,.3,1) both;
         }
-        .lp-mob-thumb:last-child { padding-right: 0; }
       `}</style>
     </div>
   );
