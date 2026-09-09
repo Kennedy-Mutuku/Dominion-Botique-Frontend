@@ -217,7 +217,6 @@ export default function LoginPage() {
             <span className="lp-rl" />
           </div>
           <h1 className="lp-brand-title">Nyakoe Fassions</h1>
-          <p className="lp-brand-sub">Timeless Style, Just For You</p>
         </div>
 
         {/* ② Login — middle (flex-grows to fill space) */}
@@ -231,9 +230,7 @@ export default function LoginPage() {
             }}
           >
             <div className="lp-ch">
-              <p className="lp-eyebrow">Welcome back</p>
               <h3 className="lp-ctitle">{step === 1 ? 'Sign In' : 'Enter Password'}</h3>
-              <p className="lp-csub">{step === 1 ? 'Enter your username to continue' : `Signing in as · ${username}`}</p>
             </div>
 
             <form onSubmit={step === 1 ? handleContinue : handleSignIn} className="lp-form">
@@ -250,7 +247,7 @@ export default function LoginPage() {
                   <div className="lp-iw">
                     <User size={15} className="lp-ii" />
                     <input type="text" value={username} autoFocus className="lp-i"
-                      placeholder="Enter your username"
+                      placeholder="Username"
                       onChange={e => { setUsername(e.target.value); setUserErr(''); }} />
                   </div>
                 )}
@@ -279,7 +276,7 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <p className="lp-cf">Nyakoe Fassions · Private Access</p>
+
           </div>
         </div>
 
@@ -361,9 +358,7 @@ export default function LoginPage() {
         <div className="lp-mob-card-wrap">
           <div className="lp-card lp-mob-card">
             <div className="lp-ch">
-              <p className="lp-eyebrow">Welcome back</p>
               <h3 className="lp-ctitle">{step === 1 ? 'Sign In' : 'Enter Password'}</h3>
-              <p className="lp-csub">{step === 1 ? 'Enter your username to continue' : `Signing in as · ${username}`}</p>
             </div>
 
             <form onSubmit={step === 1 ? handleContinue : handleSignIn} className="lp-form">
@@ -380,7 +375,7 @@ export default function LoginPage() {
                   <div className="lp-iw">
                     <User size={15} className="lp-ii" />
                     <input type="text" value={username} autoFocus className="lp-i"
-                      placeholder="Enter your username"
+                      placeholder="Username"
                       onChange={e => { setUsername(e.target.value); setUserErr(''); }} />
                   </div>
                 )}
@@ -409,7 +404,7 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <p className="lp-cf">Nyakoe Fassions · Private Access</p>
+
           </div>
         </div>
 
@@ -449,7 +444,7 @@ export default function LoginPage() {
 
       {/* ══ Styles ══ */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap');
 
         /* ─────────────────────────────────────────────────────────
            ROOT
@@ -459,6 +454,7 @@ export default function LoginPage() {
           width: 100%;
           background: #05050a;
           overflow: hidden;
+          font-family: 'Inter', sans-serif;
         }
 
         /* ─────────────────────────────────────────────────────────
@@ -557,7 +553,7 @@ export default function LoginPage() {
           text-transform: uppercase; color: rgba(255,255,255,.48);
         }
         .lp-lname {
-          font-family: Georgia, "Times New Roman", serif;
+          font-family: 'Playfair Display', serif;
           font-size: clamp(1rem, 1.55vw, 1.4rem);
           font-weight: 700; letter-spacing: .04em;
           text-transform: uppercase; color: rgba(255,255,255,.94);
@@ -571,8 +567,8 @@ export default function LoginPage() {
           display: flex; align-items: baseline; gap: .28rem;
         }
         .lp-cnt-n {
-          font-family: Georgia, serif; font-size: 2.4rem;
-          font-weight: 300; line-height: 1;
+          font-family: 'Playfair Display', serif; font-size: 2.4rem;
+          font-weight: 600; line-height: 1;
           color: rgba(255,255,255,.55); letter-spacing: .06em;
         }
         .lp-cnt-s { font-size: 10px; color: rgba(255,255,255,.22); }
@@ -583,8 +579,8 @@ export default function LoginPage() {
           display: none;               /* hidden on mobile */
           flex: 0 0 calc(100vw / 3);
           height: 100vh;
-          background: #060609;
-          border-left: 1px solid rgba(255,255,255,.06);
+          background: #ffffff;
+          border-left: 2px solid #000000;
           flex-direction: column;
           align-items: center;
           overflow: hidden;
@@ -597,11 +593,11 @@ export default function LoginPage() {
           display: flex; flex-direction: column; align-items: center;
           padding: 2rem 1.5rem 1.25rem;
           width: 100%;
-          border-bottom: 1px solid rgba(255,255,255,.05);
+          border-bottom: 1px solid #f0f0f0;
         }
         .lp-brand-logo {
           height: 62px; width: auto;
-          filter: invert(1) drop-shadow(0 0 14px rgba(244,63,94,.55));
+          filter: drop-shadow(0 0 14px rgba(244,63,94,.25));
           margin-bottom: .75rem;
         }
         .lp-brand-rule {
@@ -616,19 +612,16 @@ export default function LoginPage() {
         }
         .lp-heart { color: #f43f5e; fill: #f43f5e; flex-shrink: 0; }
         .lp-brand-title {
-          font-family: 'Cinzel', Georgia, serif;
-          font-size: clamp(1rem, 1.45vw, 1.3rem);
-          font-weight: 700; letter-spacing: .28em;
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+          font-weight: 800; letter-spacing: .15em;
           text-transform: uppercase;
-          background: linear-gradient(135deg, #ffffff 0%, #fda4af 60%, #e879f9 100%);
-          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-          background-clip: text;
+          color: #111111;
           text-align: center; margin-bottom: .3rem;
-          filter: drop-shadow(0 2px 12px rgba(244,63,94,.3));
         }
         .lp-brand-sub {
           font-size: 7.5px; font-weight: 700; letter-spacing: .55em;
-          text-transform: uppercase; color: rgba(255,255,255,.35);
+          text-transform: uppercase; color: #666666;
           text-align: center;
         }
 
@@ -645,11 +638,12 @@ export default function LoginPage() {
           flex-shrink: 0;
           width: 100%;
           padding: .85rem 1rem 1.1rem;
-          border-top: 1px solid rgba(255,255,255,.05);
+          background: #000000;
+          border-top: 1px solid rgba(255,255,255,0.05);
         }
         .lp-thumbs-label {
           font-size: 8px; font-weight: 700; letter-spacing: .38em;
-          text-transform: uppercase; color: rgba(255,255,255,.25);
+          text-transform: uppercase; color: rgba(255,255,255,0.4);
           margin-bottom: .55rem; padding-left: .1rem;
         }
         .lp-thumbs {
@@ -658,8 +652,8 @@ export default function LoginPage() {
         .lp-thumb {
           flex: 1; position: relative; border-radius: .55rem;
           overflow: hidden; aspect-ratio: 3/4;
-          box-shadow: 0 4px 16px rgba(0,0,0,.55);
-          border: 1px solid rgba(255,255,255,.06);
+          box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+          border: 1px solid rgba(255,255,255,0.1);
         }
         /* Crossfade keyframes — out snaps fast, brief black, then in fades */
         @keyframes lp-img-fadein  { from{opacity:0} to{opacity:1} }
@@ -687,35 +681,27 @@ export default function LoginPage() {
         /* ── Login card (shared desktop + mobile) ── */
         .lp-card {
           width: 100%;
-          background: rgba(8,8,18,.82);
-          border: 1px solid rgba(255,255,255,.09);
-          border-radius: 1.4rem;
-          padding: 2rem 1.8rem 1.6rem;
-          box-shadow:
-            0 0 0 1px rgba(244,63,94,.08) inset,
-            0 8px 60px rgba(0,0,0,.7),
-            0 0 40px rgba(244,63,94,.06);
-          backdrop-filter: blur(24px);
-          -webkit-backdrop-filter: blur(24px);
+          background: #ffffff;
+          border: 1px solid #eaeaea;
+          border-radius: 1.5rem;
+          padding: 2.5rem 2rem 2rem;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02);
         }
-        .lp-ch { margin-bottom: 1.6rem; text-align: center; }
+        .lp-ch { margin-bottom: 1.5rem; text-align: center; }
         .lp-eyebrow {
-          font-size: 9px; font-weight: 900; letter-spacing: .55em;
+          font-size: 9px; font-weight: 800; letter-spacing: .4em;
           text-transform: uppercase;
-          background: linear-gradient(to right, #f43f5e, #e879f9);
-          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-          background-clip: text;
+          color: #e11d48;
           margin-bottom: .6rem; display: block;
         }
         .lp-ctitle {
-          font-family: Georgia, serif; font-size: 2.1rem;
+          font-family: 'Playfair Display', serif; font-size: 2.1rem;
           font-weight: 700; letter-spacing: .02em;
-          color: #ffffff; margin-bottom: .4rem;
-          text-shadow: 0 2px 20px rgba(244,63,94,.25);
+          color: #111111; margin-bottom: .4rem;
         }
         .lp-csub {
-          font-size: 12px; font-weight: 500;
-          color: rgba(255,255,255,.55);
+          font-size: 12px; font-weight: 600;
+          color: #555555;
           letter-spacing: .03em;
         }
         .lp-form { display:flex; flex-direction:column; gap:.85rem; }
@@ -724,71 +710,71 @@ export default function LoginPage() {
         @keyframes lp-field-in { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
         .lp-lbl {
           font-size: 9px; font-weight:800; letter-spacing:.4em;
-          text-transform:uppercase; color:rgba(255,255,255,.60);
+          text-transform:uppercase; color:#444444;
           margin-bottom:.45rem; text-align: center;
         }
         .lp-iw { position:relative; display:flex; align-items:center; }
         .lp-ii {
-          position:absolute; left:.88rem; color:rgba(255,255,255,.22);
+          position:absolute; left:.88rem; color:#888888;
           pointer-events:none; transition:color .2s; flex-shrink:0;
         }
         .lp-iw:focus-within .lp-ii { color:#f43f5e; }
         .lp-i {
-          width:100%; padding:.8rem .9rem .8rem 2.6rem;
-          background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14);
-          border-radius:.8rem; color:#ffffff; font-size:.95rem; font-weight:500; outline:none;
-          transition:border-color .2s, background .2s, box-shadow .2s;
+          width:100%; padding:1rem 1rem 1rem 2.8rem;
+          background:#ffffff; border:1px solid #e5e5e5;
+          border-radius:.75rem; color:#111111; font-size:.95rem; font-weight:500; outline:none;
+          transition:border-color .2s, box-shadow .2s;
         }
-        .lp-i::placeholder { color:rgba(255,255,255,.28); font-weight:400; }
+        .lp-i::placeholder { color:#aaaaaa; font-weight:400; }
         .lp-i:focus {
-          border-color:rgba(244,63,94,.5); background:rgba(255,255,255,.09);
-          box-shadow:0 0 0 3px rgba(244,63,94,.10);
+          border-color:#111111;
+          box-shadow:0 0 0 1px #111111;
         }
         .lp-eye {
-          position:absolute; right:.86rem; color:rgba(255,255,255,.22);
+          position:absolute; right:1rem; color:#888888;
           background:none; border:none; cursor:pointer;
           display:flex; align-items:center; transition:color .2s; padding:0;
         }
-        .lp-eye:hover { color:rgba(255,255,255,.55); }
+        .lp-eye:hover { color:#111111; }
         .lp-chip {
           display:flex; align-items:center; gap:.5rem;
-          background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);
-          border-radius:.72rem; padding:.65rem .9rem;
+          background:#f9f9f9; border:1px solid #eaeaea;
+          border-radius:.75rem; padding:.75rem 1rem;
         }
         .lp-chip-av {
-          width:1.4rem; height:1.4rem; border-radius:50%;
-          background:rgba(244,63,94,.18); display:flex; align-items:center;
-          justify-content:center; color:#f43f5e; flex-shrink:0;
+          width:1.6rem; height:1.6rem; border-radius:50%;
+          background:#111111; display:flex; align-items:center;
+          justify-content:center; color:#ffffff; flex-shrink:0;
         }
-        .lp-chip-name { flex:1; font-size:.875rem; font-weight:700; color:rgba(255,255,255,.86); }
+        .lp-chip-name { flex:1; font-size:.875rem; font-weight:600; color:#111111; }
         .lp-chip-btn {
-          font-size:8px; font-weight:700; letter-spacing:.18em;
-          text-transform:uppercase; color:#f43f5e;
+          font-size:9px; font-weight:700; letter-spacing:.15em;
+          text-transform:uppercase; color:#666666;
           background:none; border:none; cursor:pointer; transition:color .2s; padding:0;
         }
-        .lp-chip-btn:hover { color:#fb7185; }
+        .lp-chip-btn:hover { color:#111111; }
         .lp-err {
-          display:flex; align-items:center; gap:.28rem; margin-top:.35rem;
-          font-size:11px; font-weight:600; color:#f43f5e;
+          display:flex; align-items:center; gap:.28rem; margin-top:.4rem;
+          font-size:11px; font-weight:600; color:#e11d48;
         }
-        .lp-ed { display:inline-block; width:4px; height:4px; background:#f43f5e; border-radius:50%; flex-shrink:0; }
+        .lp-ed { display:inline-block; width:4px; height:4px; background:#e11d48; border-radius:50%; flex-shrink:0; }
         .lp-btn {
           display:flex; align-items:center; justify-content:center; gap:.5rem;
-          width:100%; padding:.9rem 1rem;
-          background:linear-gradient(135deg,#f43f5e 0%,#c026d3 100%);
-          color:#fff; font-size:10px; font-weight:800; letter-spacing:.32em;
-          text-transform:uppercase; border:none; border-radius:.9rem; cursor:pointer;
-          margin-top:.3rem;
-          box-shadow: 0 8px 26px rgba(244,63,94,.32), 0 0 0 1px rgba(255,255,255,.06) inset;
-          transition:transform .2s, box-shadow .2s, filter .2s;
+          width:100%; padding:1.1rem;
+          background:#111111;
+          color:#ffffff; font-size:11px; font-weight:700; letter-spacing:.25em;
+          text-transform:uppercase; border:none; border-radius:.75rem; cursor:pointer;
+          margin-top:1.2rem;
+          box-shadow: 0 4px 12px rgba(0,0,0,.15);
+          transition:transform .2s, box-shadow .2s, background .2s;
         }
-        .lp-btn:hover { transform:translateY(-2px); box-shadow:0 16px 40px rgba(244,63,94,.50); filter:brightness(1.1); }
+        .lp-btn:hover { background:#000000; transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,0,0,.25); }
         .lp-btn:active { transform:scale(.97); }
         .lp-cf {
           margin-top:1.2rem; padding-top:1rem;
-          border-top:1px solid rgba(255,255,255,.05); text-align:center;
+          border-top:1px solid #f0f0f0; text-align:center;
           font-size:8px; letter-spacing:.28em; text-transform:uppercase;
-          color:rgba(255,255,255,.14);
+          color:#888888;
         }
         @keyframes lp-shake {
           0%,100%{transform:translateX(0)} 18%{transform:translateX(-8px)}
@@ -847,11 +833,9 @@ export default function LoginPage() {
           display: flex; align-items: center; gap: .35rem; margin-bottom: .35rem;
         }
         .lp-mob-title {
-          font-family: 'Cinzel', Georgia, serif; font-size: 1.15rem; font-weight: 700;
-          letter-spacing: .22em; text-transform: uppercase;
-          background: linear-gradient(135deg, #fff 0%, #fda4af 60%, #e879f9 100%);
-          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-          background-clip: text;
+          font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700;
+          letter-spacing: .15em; text-transform: uppercase;
+          color: #ffffff;
         }
 
         /* Mobile card */
@@ -872,23 +856,24 @@ export default function LoginPage() {
           display: flex; align-items: center; justify-content: center;
           gap: .55rem; flex-wrap: wrap;
           padding: .7rem 1rem .9rem;
-          border-top: 1px solid rgba(255,255,255,.05);
+          background: #000000;
+          border-top: 1px solid rgba(255,255,255,0.05);
         }
         .lp-powered-link {
           display: inline-flex; align-items: center; gap: .45rem;
           font-size: 8.5px; font-weight: 800; letter-spacing: .32em;
-          text-transform: uppercase; color: rgba(255,255,255,.65);
+          text-transform: uppercase; color: rgba(255,255,255,0.6);
           text-decoration: none; transition: color .2s;
         }
         .lp-powered-link:hover { color: #fb7185; }
         .lp-powered-logo {
           height: 16px; width: auto;
-          filter: brightness(0) invert(1); opacity: .75;
+          filter: invert(1); opacity: .75;
         }
-        .lp-powered-sep { color: rgba(255,255,255,.18); font-size: 10px; }
+        .lp-powered-sep { color: rgba(255,255,255,0.2); font-size: 10px; }
         .lp-powered-tel {
           font-size: 8.5px; font-weight: 700; letter-spacing: .28em;
-          text-transform: uppercase; color: rgba(255,255,255,.38);
+          text-transform: uppercase; color: rgba(255,255,255,0.4);
         }
         /* Mobile powered by — sits above the dark overlay */
         .lp-powered-mob {
