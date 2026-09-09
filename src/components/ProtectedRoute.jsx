@@ -7,8 +7,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="w-10 h-10 border-4 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -18,8 +18,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // Redirect to their respective dashboard if they try to access an unauthorized area
-    const redirectPath = user.role === 'admin' ? '/admin/dashboard' : '/staff/dashboard';
+    const redirectPath = user.role === 'admin' ? '/admin' : '/';
     return <Navigate to={redirectPath} replace />;
   }
 

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowDownLeft, ArrowUpRight, Activity, Package, TrendingUp, TrendingDown } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Activity, Package, TrendingUp, TrendingDown, LogOut } from 'lucide-react';
 import Header from '../components/Header';
 import VideoBackground from '../components/VideoBackground';
 import dominionLogo from '../assets/dominion softwares main logo.png';
+import { useAuth } from '../context/AuthContext';
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   // State for data
   const [stock, setStock] = useState([]);
@@ -39,8 +41,21 @@ const LandingPage = () => {
   const stockOutRevenue = filteredSales.reduce((sum, sale) => sum + (sale.soldPrice || 0), 0);
   const totalProfit = filteredSales.reduce((sum, sale) => sum + (sale.profit || 0), 0);
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen bg-white selection:bg-black selection:text-white">
+      {/* Fixed logout button */}
+      <button
+        onClick={handleLogout}
+        className="fixed top-4 right-4 z-[70] flex items-center gap-1.5 px-3 py-1.5 bg-black/50 backdrop-blur-md border border-white/10 hover:bg-black/70 text-white/70 hover:text-white rounded-full text-[10px] font-bold uppercase tracking-widest transition-all"
+      >
+        <LogOut size={11} />
+        <span>Sign Out</span>
+      </button>
       <Header />
       
       <main className="pt-[140px] md:pt-[150px]">

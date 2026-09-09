@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -15,23 +14,20 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (email, password, role) => {
-    try {
-      // Professional API call would happen here
-      // For now, we use a mock successful login
-      const mockUser = {
-        id: '1',
-        name: role === 'admin' ? 'Admin User' : 'Staff Member',
-        email,
-        role
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem('user', JSON.stringify(mockUser));
+  const login = (username, password) => {
+    if (username.trim() === 'User' && password === 'Lucy') {
+      const u = { id: '1', name: 'User', role: 'user' };
+      setUser(u);
+      localStorage.setItem('user', JSON.stringify(u));
       return { success: true };
-    } catch (error) {
-      return { success: false, error: 'Invalid credentials' };
     }
+    if (username.trim() === 'Admin' && password === 'Rev') {
+      const u = { id: '2', name: 'Admin', role: 'admin' };
+      setUser(u);
+      localStorage.setItem('user', JSON.stringify(u));
+      return { success: true };
+    }
+    return { success: false, error: 'Invalid credentials' };
   };
 
   const logout = () => {
