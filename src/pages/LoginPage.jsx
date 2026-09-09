@@ -72,17 +72,21 @@ export default function LoginPage() {
   const { login } = useAuth();
 
   /* ── Carousel state ── */
-  const [startIdx,  setStartIdx]  = useState(0);
-  const [slideKey,  setSlideKey]  = useState(0);
-  const [labelsKey, setLabelsKey] = useState(0);
-  const [progKey,   setProgKey]   = useState(0);
+  const [startIdx, setStartIdx] = useState(0);
+  const [progKey,  setProgKey]  = useState(0);
   const sliding     = useRef(false);
-  const startIdxRef = useRef(0);   // stale-closure-safe copy of startIdx
+  const startIdxRef = useRef(0);
+
+  /* ── Big panel crossfade state ── */
+  const mkPanels = (idx) => [0, 1].map(i => SLIDES[(idx+i)%N]);
+  const [currPanels,   setCurrPanels]   = useState(() => mkPanels(0));
+  const [prevPanels,   setPrevPanels]   = useState(null);
+  const [panelFadeKey, setPanelFadeKey] = useState(0);
 
   /* ── Thumb crossfade state ── */
   const mkThumbs = (idx) => [2,3,4,5].map(i => SLIDES[(idx+i)%N]);
-  const [currThumbs, setCurrThumbs] = useState(() => mkThumbs(0));
-  const [prevThumbs, setPrevThumbs] = useState(null);
+  const [currThumbs,   setCurrThumbs]   = useState(() => mkThumbs(0));
+  const [prevThumbs,   setPrevThumbs]   = useState(null);
   const [thumbFadeKey, setThumbFadeKey] = useState(0);
 
   /* ── Login state ── */
@@ -100,26 +104,30 @@ export default function LoginPage() {
   const advance = useCallback(() => {
     if (sliding.current) return;
     sliding.current = true;
-    setSlideKey(k => k + 1);                       // fire strip slide
 
+    const curIdx = startIdxRef.current;
+    const newIdx = (curIdx + 1) % N;
+    startIdxRef.current = newIdx;
+
+    // Big panel crossfade
+    setPrevPanels(mkPanels(curIdx));
+    setCurrPanels(mkPanels(newIdx));
+    setPanelFadeKey(k => k + 1);
+
+    // Thumb crossfade
+    setPrevThumbs(mkThumbs(curIdx));
+    setCurrThumbs(mkThumbs(newIdx));
+    setThumbFadeKey(k => k + 1);
+
+    setStartIdx(newIdx);
+    setProgKey(p => p + 1);
+
+    // Release lock + clear prev layers after animations finish
     setTimeout(() => {
-      const curIdx = startIdxRef.current;
-      const newIdx = (curIdx + 1) % N;
-      startIdxRef.current = newIdx;
-
-      // Thumb crossfade: swap prev/curr
-      setPrevThumbs(mkThumbs(curIdx));
-      setCurrThumbs(mkThumbs(newIdx));
-      setThumbFadeKey(k => k + 1);
-
-      setStartIdx(newIdx);
-      setProgKey (p => p + 1);
-      setLabelsKey(l => l + 1);
+      setPrevPanels(null);
+      setPrevThumbs(null);
       sliding.current = false;
-
-      // Clear prev layer after longest animation finishes (~1.8s for rightmost box)
-      setTimeout(() => setPrevThumbs(null), 1900);
-    }, SLIDE_MS);
+    }, 2100);
   }, []);
 
   useEffect(() => {
@@ -141,9 +149,6 @@ export default function LoginPage() {
     else { setPassErr('Incorrect password'); setShake(true); setTimeout(() => setShake(false), 650); }
   };
 
-  /* ── Derived photo sets ── */
-  const strip  = [0, 1, 2].map(i => SLIDES[(startIdx + i) % N]);
-  const labels = [0, 1].map(i => SLIDES[(startIdx + i) % N]);
 
   /* ── Mobile: single photo crossfade ── */
   const [mobCurr, setMobCurr] = useState(0);
@@ -166,19 +171,29 @@ export default function LoginPage() {
         <div key={progKey} className="lp-prog-fill" />
       </div>
 
-      {/* ── LEFT: 2 full-height sliding portrait photos ── */}
+      {/* ── LEFT: 2 full-height crossfading portrait photos ── */}
       <div className="lp-left">
 
-        {/* Sliding strip — 3 photos wide, 2 visible */}
-        <div key={slideKey} className="lp-strip">
-          {strip.map((s, i) => (
-            <div key={i} className="lp-panel">
-              <img src={s.img} alt={s.name} className="lp-panel-img" />
-            </div>
-          ))}
-        </div>
+        {currPanels.map((s, i) => (
+          <div key={i} className="lp-panel">
+            {/* Old photo fades out */}
+            {prevPanels && (
+              <img key={`pout-${panelFadeKey}-${i}`}
+                src={prevPanels[i].img} alt=""
+                className="lp-panel-img lp-img-out"
+                style={{ animationDelay: `${(1-i)*0.3}s` }}
+              />
+            )}
+            {/* New photo fades in after out */}
+            <img key={`pin-${panelFadeKey}-${i}`}
+              src={s.img} alt={s.name}
+              className="lp-panel-img lp-img-in"
+              style={{ animationDelay: `${(1-i)*0.3 + 0.42}s` }}
+            />
+          </div>
+        ))}
 
-        {/* Local vignette overlays (stay inside left section) */}
+        {/* Local vignette overlays */}
         <div className="lp-ov-top" />
         <div className="lp-ov-bot-left" />
         <div className="lp-ov-ledge" />
@@ -463,23 +478,11 @@ export default function LoginPage() {
           flex: 0 0 calc(100vw * 2 / 3);
           height: 100vh;
         }
-        @media (min-width: 1024px) { .lp-left { display: block; } }
+        @media (min-width: 1024px) { .lp-left { display: flex; flex-direction: row; } }
 
-        /* Sliding strip — 3 photos × (100vw/3) = 100vw total width */
-        .lp-strip {
-          display: flex;
-          width: 100vw;               /* 3 × 33.33vw */
-          height: 100%;
-          animation: lp-slide ${SLIDE_MS}ms cubic-bezier(.77,0,.18,1) forwards;
-        }
-        @keyframes lp-slide {
-          from { transform: translateX(0); }
-          to   { transform: translateX(calc(-100vw / 3)); }
-        }
-
-        /* Individual photo panel */
+        /* Individual photo panel — side by side, each 1/2 of left section */
         .lp-panel {
-          flex: 0 0 calc(100vw / 3);
+          flex: 1;
           height: 100%;
           overflow: hidden;
           position: relative;
@@ -488,15 +491,11 @@ export default function LoginPage() {
           border-left: 1px solid rgba(255,255,255,.07);
         }
         .lp-panel-img {
+          position: absolute; inset: 0;
           width: 100%; height: 100%;
           object-fit: cover;
           object-position: top center;
           display: block;
-          animation: lp-zoom 9s ease-in-out infinite alternate;
-        }
-        @keyframes lp-zoom {
-          from { transform: scale(1.00); }
-          to   { transform: scale(1.06); }
         }
 
         /* Local overlays inside left section */
