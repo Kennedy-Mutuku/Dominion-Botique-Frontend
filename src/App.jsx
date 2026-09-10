@@ -7,12 +7,14 @@ import InflowPage from './pages/InflowPage';
 import OutflowPage from './pages/OutflowPage';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/AdminDashboard';
+import AutoLogout from './components/AutoLogout';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <Routes>
+        <AutoLogout>
+          <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={
             <ProtectedRoute allowedRoles={['user', 'admin']}>
@@ -36,6 +38,7 @@ function App() {
           } />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
+        </AutoLogout>
       </Router>
     </AuthProvider>
   );

@@ -8,13 +8,28 @@ const OutflowPage = () => {
   const [sales, setSales] = useState([]);
   
   // Form State
-  const [selectedProductId, setSelectedProductId] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const getDraft = () => {
+    const draft = localStorage.getItem('lucy_draft_outflow');
+    if (draft) {
+      try { return JSON.parse(draft); } catch(e) {}
+    }
+    return null;
+  };
+  const draft = getDraft();
+
+  const [selectedProductId, setSelectedProductId] = useState(draft?.selectedProductId || '');
+  const [searchQuery, setSearchQuery] = useState(draft?.searchQuery || '');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [soldPrice, setSoldPrice] = useState('');
+  const [soldPrice, setSoldPrice] = useState(draft?.soldPrice || '');
   const [listSearchQuery, setListSearchQuery] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [time, setTime] = useState(new Date().toLocaleTimeString('en-US', { hour12: false }).substring(0, 5));
+  const [date, setDate] = useState(draft?.date || new Date().toISOString().split('T')[0]);
+  const [time, setTime] = useState(draft?.time || new Date().toLocaleTimeString('en-US', { hour12: false }).substring(0, 5));
+
+  // Persist draft to local storage
+  useEffect(() => {
+    const draftState = { selectedProductId, searchQuery, soldPrice, date, time };
+    localStorage.setItem('lucy_draft_outflow', JSON.stringify(draftState));
+  }, [selectedProductId, searchQuery, soldPrice, date, time]);
 
   // Derived state
   const selectedProduct = stock.find(item => item.id === selectedProductId);
@@ -72,6 +87,7 @@ const OutflowPage = () => {
     setSoldPrice('');
     setDate(new Date().toISOString().split('T')[0]);
     setTime(new Date().toLocaleTimeString('en-US', { hour12: false }).substring(0, 5));
+    localStorage.removeItem('lucy_draft_outflow');
   };
 
   return (

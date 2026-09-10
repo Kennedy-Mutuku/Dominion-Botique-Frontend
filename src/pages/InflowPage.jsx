@@ -8,14 +8,25 @@ const InflowPage = () => {
   const [listSearchQuery, setListSearchQuery] = useState('');
   
   // Form State
-  const [formData, setFormData] = useState({
-    name: '',
-    quantity: '',
-    buyingPrice: '',
-    price: '',
-    date: new Date().toISOString().split('T')[0],
-    time: new Date().toLocaleTimeString('en-US', { hour12: false }).substring(0, 5)
+  const [formData, setFormData] = useState(() => {
+    const draft = localStorage.getItem('lucy_draft_inflow');
+    if (draft) {
+      try { return JSON.parse(draft); } catch(e) {}
+    }
+    return {
+      name: '',
+      quantity: '',
+      buyingPrice: '',
+      price: '',
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toLocaleTimeString('en-US', { hour12: false }).substring(0, 5)
+    };
   });
+
+  // Persist draft to local storage
+  useEffect(() => {
+    localStorage.setItem('lucy_draft_inflow', JSON.stringify(formData));
+  }, [formData]);
 
   // Load stock on mount
   useEffect(() => {
@@ -57,6 +68,7 @@ const InflowPage = () => {
       date: new Date().toISOString().split('T')[0],
       time: new Date().toLocaleTimeString('en-US', { hour12: false }).substring(0, 5)
     });
+    localStorage.removeItem('lucy_draft_inflow');
   };
 
   const totalWorth = stock.reduce((sum, item) => sum + (item.quantity * item.price), 0);

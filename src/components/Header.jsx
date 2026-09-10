@@ -20,8 +20,6 @@ const Header = () => {
           <img src={dominionLogo} alt="Dominion Softwares" className="h-[14px] w-auto brightness-0 invert opacity-75" />
           Dominion Softwares
         </a>
-        <span className="text-white/15 hidden sm:inline">·</span>
-        <span className="text-[8px] uppercase font-bold text-white/35 tracking-[0.28em] hidden sm:inline">Tel: 0740881485</span>
       </div>
 
       <div className="flex flex-col items-center justify-center relative max-w-5xl mx-auto px-4 py-3">

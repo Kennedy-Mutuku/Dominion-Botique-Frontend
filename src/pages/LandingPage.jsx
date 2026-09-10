@@ -14,14 +14,8 @@ const LandingPage = () => {
   const [stock, setStock] = useState([]);
   const [sales, setSales] = useState([]);
 
-  // State for dates
-  const today = new Date().toISOString().split('T')[0];
-  
-  // Default fromDate to the 1st of the current month
-  const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-  
-  const [fromDate, setFromDate] = useState(firstDayOfMonth);
-  const [toDate, setToDate] = useState(today);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
   // Load data on mount
   useEffect(() => {
@@ -33,8 +27,17 @@ const LandingPage = () => {
   }, []);
 
   // Filter Logic
-  const filteredStock = stock.filter(item => item.date >= fromDate && item.date <= toDate);
-  const filteredSales = sales.filter(sale => sale.date >= fromDate && sale.date <= toDate);
+  const filteredStock = stock.filter(item => {
+    const afterFrom = fromDate ? item.date >= fromDate : true;
+    const beforeTo = toDate ? item.date <= toDate : true;
+    return afterFrom && beforeTo;
+  });
+  
+  const filteredSales = sales.filter(sale => {
+    const afterFrom = fromDate ? sale.date >= fromDate : true;
+    const beforeTo = toDate ? sale.date <= toDate : true;
+    return afterFrom && beforeTo;
+  });
 
   // Calculations
   const stockInValue = filteredStock.reduce((sum, item) => sum + (item.quantity * (item.buyingPrice || 0)), 0);
@@ -48,14 +51,6 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-white selection:bg-black selection:text-white">
-      {/* Fixed logout button */}
-      <button
-        onClick={handleLogout}
-        className="fixed top-4 right-4 z-[70] flex items-center gap-1.5 px-3 py-1.5 bg-black/50 backdrop-blur-md border border-white/10 hover:bg-black/70 text-white/70 hover:text-white rounded-full text-[10px] font-bold uppercase tracking-widest transition-all"
-      >
-        <LogOut size={11} />
-        <span>Sign Out</span>
-      </button>
       <Header />
       
       <main className="pt-[168px] md:pt-[178px]">
@@ -145,6 +140,15 @@ const LandingPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* SIGN OUT Button - Prominent */}
+            <button
+              onClick={handleLogout}
+              className="mt-12 group flex items-center justify-center gap-3 px-10 py-4 w-full md:w-auto bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white shadow-[0_8px_30px_rgba(225,29,72,0.4)] hover:shadow-[0_8px_40px_rgba(225,29,72,0.6)] hover:-translate-y-1 transition-all duration-300 rounded-sm"
+            >
+              <LogOut size={20} className="opacity-90 group-hover:opacity-100 transition-opacity" strokeWidth={2.5} />
+              <span className="text-sm font-black uppercase tracking-[0.3em]">Sign Out</span>
+            </button>
           </div>
           
           {/* Footer */}
@@ -160,8 +164,6 @@ const LandingPage = () => {
                 <img src={dominionLogo} alt="Dominion Softwares" className="h-4 w-auto" />
                 Dominion Softwares
               </a>
-              <span className="text-white/30 pointer-events-none hidden sm:inline">|</span>
-              <span className="text-white/80 font-semibold pointer-events-none">Tel: 0740881485</span>
             </div>
           </footer>
         </section>
