@@ -22,11 +22,13 @@ const CustomersPage = () => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const customers = [
-    { id: 'CUST-001', name: 'Alice Johnson', phone: '0712345678', email: 'alice@example.com', lastOrder: '2023-10-24', totalSpent: 25000, measurements: { chest: '34', waist: '28', shoulder: '15' } },
-    { id: 'CUST-002', name: 'Bob Smith', phone: '0722334455', email: 'bob@example.com', lastOrder: '2023-10-15', totalSpent: 12000, measurements: { chest: '40', waist: '34', shoulder: '18' } },
-    { id: 'CUST-003', name: 'Catherine Lee', phone: '0733445566', email: 'cat@example.com', lastOrder: '2023-09-30', totalSpent: 3500, measurements: { chest: '32', waist: '26', shoulder: '14' } },
-  ];
+  const [customers, setCustomers] = useState(() => {
+    const saved = localStorage.getItem('lucy_customers');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
+  const [newCustomer, setNewCustomer] = useState({ name: '', phone: '' });
+  const [formErrors, setFormErrors] = useState({});
 
   const filteredCustomers = customers.filter(c => 
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -145,7 +147,7 @@ const CustomersPage = () => {
               </div>
               <div className="p-8">
                 <div className="grid grid-cols-2 gap-6">
-                  {Object.entries(selectedCustomer.measurements).map(([key, value]) => (
+                  {selectedCustomer.measurements && Object.entries(selectedCustomer.measurements).map(([key, value]) => (
                     <div key={key} className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{key}</p>
                       <p className="text-xl font-black text-slate-800">{value}"</p>
@@ -172,20 +174,54 @@ const CustomersPage = () => {
                 <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-rose-500 transition-colors">✕</button>
               </div>
               <div className="p-8 space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-600 ml-1">Full Name</label>
-                  <input type="text" placeholder="Enter customer name..." className="w-full px-5 py-3.5 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-blue-500/10 transition-all font-medium" />
+                <div className="space-y-2 relative">
+                  <label className="text-sm font-bold text-slate-600 ml-1">Full Name <span className="text-rose-500">*</span></label>
+                  <input id="field-cust-name" type="text" value={newCustomer.name} onChange={(e) => {setNewCustomer({...newCustomer, name: e.target.value}); setFormErrors(p => ({...p, name: null}))}} placeholder="Enter customer name..." className={`w-full px-5 py-3.5 bg-slate-50 rounded-2xl transition-all font-medium border-2 focus:ring-4 focus:ring-blue-500/10 ${formErrors.name ? 'border-rose-400 bg-rose-50' : 'border-transparent'}`} />
+                  {formErrors.name && <p className="text-xs font-bold text-rose-500 absolute -bottom-5 left-2 animate-in fade-in slide-in-from-top-1">{formErrors.name}</p>}
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-600 ml-1">Phone Number</label>
-                  <input type="text" placeholder="e.g. 0712345678" className="w-full px-5 py-3.5 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-blue-500/10 transition-all font-medium" />
+                <div className="space-y-2 relative mt-6">
+                  <label className="text-sm font-bold text-slate-600 ml-1">Phone Number <span className="text-rose-500">*</span></label>
+                  <input id="field-cust-phone" type="text" value={newCustomer.phone} onChange={(e) => {setNewCustomer({...newCustomer, phone: e.target.value.replace(/[^\d+\s-]/g, '')}); setFormErrors(p => ({...p, phone: null}))}} placeholder="e.g. 0712345678" className={`w-full px-5 py-3.5 bg-slate-50 rounded-2xl transition-all font-medium border-2 focus:ring-4 focus:ring-blue-500/10 ${formErrors.phone ? 'border-rose-400 bg-rose-50' : 'border-transparent'}`} />
+                  {formErrors.phone && <p className="text-xs font-bold text-rose-500 absolute -bottom-5 left-2 animate-in fade-in slide-in-from-top-1">{formErrors.phone}</p>}
                 </div>
               </div>
               <div className="p-8 bg-slate-50 border-t border-slate-100 flex justify-end gap-4">
                 <button onClick={() => setShowModal(false)} className="px-8 py-3 bg-white border border-slate-200 text-slate-600 rounded-2xl font-bold hover:bg-white/80 transition-all">Cancel</button>
                 <button 
-                  onClick={() => { alert('🎉 Customer Added Successfully!'); setShowModal(false); }}
-                  className="px-10 py-3 premium-gradient text-white rounded-2xl font-black shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 transition-all"
+                  onClick={() => {
+                    let errors = {};
+                    if (!newCustomer.name.trim()) errors.name = "Customer Name is required";
+                    if (!newCustomer.phone.trim()) {
+                      errors.phone = "Phone Number is required";
+                    } else if (newCustomer.phone.replace(/[^\d]/g, '').length < 9) {
+                      errors.phone = "Enter a valid phone number";
+                    }
+
+                    if (Object.keys(errors).length > 0) {
+                      setFormErrors(errors);
+                      const firstError = Object.keys(errors)[0];
+                      const el = document.getElementById(`field-cust-${firstError}`);
+                      if (el) el.focus();
+                      return;
+                    }
+                    setFormErrors({});
+
+                    const c = {
+                      id: `CUST-${Date.now().toString().slice(-4)}`,
+                      name: newCustomer.name,
+                      phone: newCustomer.phone,
+                      email: '',
+                      lastOrder: '-',
+                      totalSpent: 0,
+                      measurements: {}
+                    };
+                    const updated = [c, ...customers];
+                    setCustomers(updated);
+                    localStorage.setItem('lucy_customers', JSON.stringify(updated));
+                    setNewCustomer({name: '', phone: ''});
+                    setShowModal(false);
+                  }}
+                  className="px-10 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-2xl font-black shadow-[0_8px_30px_rgba(16,185,129,0.4)] hover:shadow-[0_8px_40px_rgba(16,185,129,0.6)] hover:-translate-y-1 transition-all"
                 >
                   Save Customer
                 </button>

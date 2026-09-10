@@ -7,6 +7,8 @@ import InflowPage from './pages/InflowPage';
 import OutflowPage from './pages/OutflowPage';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/AdminDashboard';
+import TailoringPage from './pages/TailoringPage';
+import CustomersPage from './pages/CustomersPage';
 import AutoLogout from './components/AutoLogout';
 
 function App() {
@@ -29,6 +31,16 @@ function App() {
           <Route path="/outflow" element={
             <ProtectedRoute allowedRoles={['user', 'admin']}>
               <OutflowPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/tailoring" element={
+            <ProtectedRoute allowedRoles={['user', 'admin']}>
+              <TailoringPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/customers" element={
+            <ProtectedRoute allowedRoles={['user', 'admin']}>
+              <CustomersPage />
             </ProtectedRoute>
           } />
           <Route path="/admin" element={

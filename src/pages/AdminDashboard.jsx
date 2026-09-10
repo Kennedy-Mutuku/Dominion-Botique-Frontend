@@ -30,6 +30,8 @@ const AdminDashboard = () => {
   const [toDate, setToDate] = useState('');
   const [stock, setStock] = useState([]);
   const [sales, setSales] = useState([]);
+  const [tailoringOrders, setTailoringOrders] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [salesSearch, setSalesSearch] = useState('');
   const [stockSearch, setStockSearch] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -92,6 +94,10 @@ const AdminDashboard = () => {
     
     setStock(parsedStock);
     setSales(parsedSales);
+    try {
+      setTailoringOrders(JSON.parse(localStorage.getItem('lucy_tailoring_orders') || '[]'));
+      setCustomers(JSON.parse(localStorage.getItem('lucy_customers') || '[]'));
+    } catch(e) {}
 
     // Notification Engine
     const lastSalesStr = localStorage.getItem('lucy_last_sales_count');
@@ -236,9 +242,12 @@ const AdminDashboard = () => {
 
   const profitPositive = totalProfit >= 0;
 
+  const activeTailoring = tailoringOrders.filter(o => o.status !== 'Ready');
+  const activeTailoringRevenue = activeTailoring.reduce((sum, o) => sum + (o.amount || 0), 0);
+
   const topCards = [
     {
-      label: 'Total Revenue', value: fmt(totalRevenue),
+      label: 'Sales Revenue', value: fmt(totalRevenue),
       icon: <DollarSign size={40} />,
       bg: 'bg-[#3b82f6]', // Blue
     },
@@ -248,14 +257,24 @@ const AdminDashboard = () => {
       bg: 'bg-[#ef4444]', // Red
     },
     {
+      label: 'Tailoring Revenue', value: fmt(activeTailoringRevenue),
+      icon: <Scissors size={40} />,
+      bg: 'bg-amber-500', // Amber
+    },
+    {
+      label: 'Active Orders', value: activeTailoring.length.toString(),
+      icon: <Package size={40} />,
+      bg: 'bg-pink-500', // Pink
+    },
+    {
+      label: 'Customers', value: customers.length.toString(),
+      icon: <Users size={40} />,
+      bg: 'bg-[#8b5cf6]', // Purple
+    },
+    {
       label: 'Total Profit', value: fmt(totalProfit),
       icon: profitPositive ? <TrendingUp size={40} /> : <TrendingDown size={40} />,
       bg: 'bg-[#10b981]', // Green
-    },
-    {
-      label: 'Stock Value', value: fmt(stockValue),
-      icon: <Package size={40} />,
-      bg: 'bg-[#8b5cf6]', // Purple
     }
   ];
 
@@ -271,7 +290,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="md:h-screen md:overflow-hidden min-h-screen bg-slate-50 flex flex-col font-sans" onClick={handleBackgroundClick}>
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans" onClick={handleBackgroundClick}>
       
       {/* Top Header */}
       <header className="bg-white shadow-sm flex flex-wrap items-center justify-between px-4 sm:px-6 py-3 sm:py-0 sm:h-16 sticky top-0 z-40 gap-4">
@@ -423,10 +442,10 @@ const AdminDashboard = () => {
       </header>
 
       {/* Dashboard Content */}
-        <main className="flex-1 px-4 sm:px-8 py-4 sm:py-6 w-full flex flex-col md:overflow-hidden min-h-0">
+        <main className="flex-1 px-4 sm:px-8 py-4 sm:py-6 w-full flex flex-col min-h-0">
           
           {/* Top Cards */}
-          <div id="overview" className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6 shrink-0 scroll-mt-24">
+          <div id="overview" className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6 shrink-0 scroll-mt-24">
             {topCards.map((card, i) => (
               <div key={i} className={`${card.bg} rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-md relative overflow-hidden flex flex-col justify-between h-24 sm:h-32 transform transition-transform hover:-translate-y-1`}>
                 <div className="relative z-10">

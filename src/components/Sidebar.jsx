@@ -30,17 +30,13 @@ const Sidebar = () => {
   const isAdmin = role === 'admin';
 
   const menuItems = isAdmin ? [
-    { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/admin/dashboard' },
-    { icon: <TrendingUp size={20} />, label: 'Reports', path: '/admin/reports' },
-    { icon: <Package size={20} />, label: 'Inventory', path: '/admin/inventory' },
-    { icon: <Scissors size={20} />, label: 'Tailoring', path: '/admin/tailoring' },
-    { icon: <Users size={20} />, label: 'Customers', path: '/admin/customers' },
-    { icon: <Receipt size={20} />, label: 'Expenses', path: '/admin/expenses' },
+    { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/admin' },
+    { icon: <Scissors size={20} />, label: 'Tailoring', path: '/tailoring' },
+    { icon: <Users size={20} />, label: 'Customers', path: '/customers' },
   ] : [
-    { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/staff/dashboard' },
-    { icon: <Package size={20} />, label: 'Stock View', path: '/staff/inventory' },
-    { icon: <Scissors size={20} />, label: 'Tailoring', path: '/staff/tailoring' },
-    { icon: <Users size={20} />, label: 'Customers', path: '/staff/customers' },
+    { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/' },
+    { icon: <Scissors size={20} />, label: 'Tailoring', path: '/tailoring' },
+    { icon: <Users size={20} />, label: 'Customers', path: '/customers' },
   ];
 
   const handleSignOut = () => {
