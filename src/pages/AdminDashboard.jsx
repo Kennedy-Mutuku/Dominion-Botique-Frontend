@@ -5,7 +5,7 @@ import {
   TrendingUp, TrendingDown, Package, ShoppingCart, DollarSign,
   BarChart2, LogOut, Calendar, RefreshCw, LayoutDashboard, Users,
   FileText, Scissors, Archive, ArrowRightLeft, PieChart as PieChartIcon,
-  Search, Menu, X, Bell
+  Search, Menu, X, Bell, ChevronRight
 } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -183,8 +183,8 @@ const AdminDashboard = () => {
     return afterFrom && beforeTo;
   });
 
-  // Summary metrics
-  const totalRevenue = filteredSales.reduce((sum, s) => sum + (s.soldPrice || 0), 0);
+  const totalEarnedRevenue = filteredSales.reduce((sum, s) => sum + (s.soldPrice || 0), 0);
+  const totalCashCollected = filteredSales.reduce((sum, s) => sum + (s.cashCollected !== undefined ? s.cashCollected : (s.soldPrice || 0)), 0);
   const totalProfit = filteredSales.reduce((sum, s) => sum + (s.profit || 0), 0);
   const totalCost = stock.reduce((sum, s) => sum + (s.quantity || 0) * (s.buyingPrice || 0), 0);
   const stockValue = stock.reduce((sum, s) => sum + (s.quantity || 0) * (s.price || 0), 0);
@@ -192,14 +192,15 @@ const AdminDashboard = () => {
 
   // Trend chart: group by date
   const salesByDate = filteredSales.reduce((acc, s) => {
-    const d = s.date;
-    if (!acc[d]) acc[d] = { date: d, revenue: 0, profit: 0 };
+    const d = s.date || 'Unknown Date';
+    if (!acc[d]) acc[d] = { date: d, revenue: 0, profit: 0, collected: 0 };
     acc[d].revenue += s.soldPrice || 0;
     acc[d].profit += s.profit || 0;
+    acc[d].collected += (s.cashCollected !== undefined ? s.cashCollected : (s.soldPrice || 0));
     return acc;
   }, {});
   const trendData = Object.values(salesByDate)
-    .sort((a, b) => a.date.localeCompare(b.date));
+    .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
 
   // Top 5 products by revenue
   const productRevenue = filteredSales.reduce((acc, s) => {
@@ -244,27 +245,30 @@ const AdminDashboard = () => {
 
   const activeTailoring = tailoringOrders.filter(o => o.status !== 'Ready');
   const activeTailoringRevenue = activeTailoring.reduce((sum, o) => sum + (o.amount || 0), 0);
+  
+  // Calculate Pending Balances from all tailoring orders
+  const totalPendingBalance = tailoringOrders.reduce((sum, o) => sum + (o.balance || 0), 0);
 
   const topCards = [
     {
-      label: 'Sales Revenue', value: fmt(totalRevenue),
+      label: 'Earned Revenue', value: fmt(totalEarnedRevenue),
       icon: <DollarSign size={40} />,
       bg: 'bg-[#3b82f6]', // Blue
     },
     {
-      label: 'Sales Count', value: salesCount.toString(),
-      icon: <ShoppingCart size={40} />,
-      bg: 'bg-[#ef4444]', // Red
+      label: 'Cash Collected', value: fmt(totalCashCollected),
+      icon: <DollarSign size={40} />,
+      bg: 'bg-[#10b981]', // Green
     },
     {
-      label: 'Tailoring Revenue', value: fmt(activeTailoringRevenue),
-      icon: <Scissors size={40} />,
-      bg: 'bg-amber-500', // Amber
+      label: 'Pending Balances', value: fmt(totalPendingBalance),
+      icon: <ShoppingCart size={40} />,
+      bg: 'bg-rose-500', // Rose
     },
     {
       label: 'Active Orders', value: activeTailoring.length.toString(),
       icon: <Package size={40} />,
-      bg: 'bg-pink-500', // Pink
+      bg: 'bg-amber-500', // Amber
     },
     {
       label: 'Customers', value: customers.length.toString(),
@@ -274,7 +278,7 @@ const AdminDashboard = () => {
     {
       label: 'Total Profit', value: fmt(totalProfit),
       icon: profitPositive ? <TrendingUp size={40} /> : <TrendingDown size={40} />,
-      bg: 'bg-[#10b981]', // Green
+      bg: 'bg-slate-900', // Dark
     }
   ];
 
@@ -489,8 +493,9 @@ const AdminDashboard = () => {
                         formatter={(v, name) => [`KSh ${v.toLocaleString()}`, name]} 
                       />
                       <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: 500, paddingTop: '10px' }} />
-                      <Line type="monotone" dataKey="profit" name="Profit" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
-                      <Line type="monotone" dataKey="loss" name="Loss" stroke="#ef4444" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="revenue" name="Earned" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="collected" name="Collected" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="profit" name="Profit" stroke="#f59e0b" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -659,6 +664,62 @@ const AdminDashboard = () => {
               )}
             </div>
 
+          </div>
+
+          {/* Customer CRM Table */}
+          <div id="customer-crm" className="mt-4 sm:mt-6 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-[300px] shrink-0 scroll-mt-24">
+            <div className="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2"><Users size={18} className="text-purple-500" /> Customer Directory</h3>
+              <Link to="/customers" className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                View Full CRM <ChevronRight size={14} />
+              </Link>
+            </div>
+            {customers.length === 0 ? (
+              <div className="p-10 text-center text-slate-400 text-sm flex-1">No customers recorded yet</div>
+            ) : (
+              <div className="flex-1 overflow-auto p-2">
+                <table className="w-full text-left border-collapse min-w-[600px]">
+                  <thead>
+                    <tr>
+                      <th className="pl-4 pr-2 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 w-8">#</th>
+                      <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Client Name</th>
+                      <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Contact</th>
+                      <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Last Visit</th>
+                      <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-right">Lifetime Value</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {customers.slice(0, 10).map((c, i) => (
+                      <tr key={c.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="pl-4 pr-2 py-2">
+                          <span className="text-[10px] font-black text-slate-300">{(i + 1).toString().padStart(2, '0')}</span>
+                        </td>
+                        <td className="px-4 py-2">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">
+                              {c.name.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="text-[13px] font-bold text-slate-800">{c.name}</p>
+                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{c.id}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-2">
+                          <p className="text-[12px] font-medium text-slate-600">{c.phone}</p>
+                        </td>
+                        <td className="px-4 py-2">
+                          <p className="text-[12px] font-medium text-slate-600">{c.lastOrder !== '-' ? new Date(c.lastOrder).toLocaleDateString() : 'N/A'}</p>
+                        </td>
+                        <td className="px-4 py-2 text-right">
+                          <p className="text-[13px] font-black text-slate-900">KSh {(c.totalSpent || 0).toLocaleString()}</p>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </main>
     </div>

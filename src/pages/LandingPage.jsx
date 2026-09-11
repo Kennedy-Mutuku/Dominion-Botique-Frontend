@@ -81,13 +81,13 @@ const LandingPage = () => {
                 <ArrowUpRight size={20} className="opacity-80 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" strokeWidth={2.5} />
               </button>
 
-              {/* TAILORING & CRM Button */}
+              {/* CUSTOMERS CRM Button */}
               <button 
-                onClick={() => navigate('/tailoring')}
+                onClick={() => navigate('/customers')}
                 className="group w-full md:w-auto flex items-center justify-center gap-4 px-12 py-5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white transition-all duration-300 shadow-[0_8px_30px_rgba(245,158,11,0.4)] hover:shadow-[0_8px_40px_rgba(245,158,11,0.6)] hover:-translate-y-1 rounded-sm"
               >
-                <span className="text-xs md:text-sm font-black uppercase tracking-[0.4em]">Tailoring</span>
-                <Scissors size={20} className="opacity-80 group-hover:opacity-100 group-hover:-rotate-12 transition-all duration-300" strokeWidth={2.5} />
+                <span className="text-xs md:text-sm font-black uppercase tracking-[0.4em]">Customers</span>
+                <Users size={20} className="opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" strokeWidth={2.5} />
               </button>
               
             </div>
