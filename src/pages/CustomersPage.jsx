@@ -33,7 +33,8 @@ const CustomersPage = () => {
     date: new Date().toISOString().split('T')[0], dueDate: new Date().toISOString().split('T')[0],
     isTailoring: false, fabricType: '', notes: '',
     chest: '', waist: '', shoulder: '', sleeve: '', neck: '', length: '', hip: '', thigh: '',
-    customMeasureName: '', customMeasureValue: ''
+    customMeasureName: '', customMeasureValue: '',
+    materialCost: '', laborCost: ''
   };
 
   const [newOrder, setNewOrder] = useState(defaultOrder);
@@ -163,7 +164,9 @@ const CustomersPage = () => {
         chest: newOrder.chest, waist: newOrder.waist, shoulder: newOrder.shoulder, sleeve: newOrder.sleeve,
         neck: newOrder.neck, length: newOrder.length, hip: newOrder.hip, thigh: newOrder.thigh,
         customMeasureName: newOrder.customMeasureName,
-        customMeasureValue: newOrder.customMeasureValue
+        customMeasureValue: newOrder.customMeasureValue,
+        materialCost: parseFloat(newOrder.materialCost || 0),
+        laborCost: parseFloat(newOrder.laborCost || 0)
       };
       tailOrders = [newTailoring, ...tailOrders];
       localStorage.setItem('lucy_tailoring_orders', JSON.stringify(tailOrders));
@@ -189,6 +192,8 @@ const CustomersPage = () => {
       isTailoring: newOrder.isTailoring,
       notes: newOrder.notes,
       measurements: newMeasurements,
+      materialCost: newOrder.isTailoring ? parseFloat(newOrder.materialCost || 0) : undefined,
+      laborCost: newOrder.isTailoring ? parseFloat(newOrder.laborCost || 0) : undefined,
       payments: (newOrder.isTailoring && depositNum > 0) ? [{ amount: depositNum, date: new Date().toISOString(), note: 'Initial Deposit' }] : []
     };
 
@@ -495,6 +500,18 @@ const CustomersPage = () => {
                                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Amount</label>
                                   <input type="number" value={editForm.amount} onChange={e => setEditForm({...editForm, amount: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-sm outline-none focus:border-slate-400 font-bold" />
                                 </div>
+                                {h.isTailoring && (
+                                  <>
+                                    <div className="space-y-1.5">
+                                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Material Cost</label>
+                                      <input type="number" value={editForm.materialCost || ''} onChange={e => setEditForm({...editForm, materialCost: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-sm outline-none focus:border-slate-400 font-bold" />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Labor Cost</label>
+                                      <input type="number" value={editForm.laborCost || ''} onChange={e => setEditForm({...editForm, laborCost: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-sm outline-none focus:border-slate-400 font-bold" />
+                                    </div>
+                                  </>
+                                )}
                               </div>
                               <div className="space-y-1.5">
                                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Notes</label>
@@ -845,8 +862,18 @@ const CustomersPage = () => {
                                 <input type="number" value={newOrder.deposit} onChange={(e) => setNewOrder({...newOrder, deposit: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-slate-400 focus:bg-white rounded-sm transition-all font-bold text-slate-900 outline-none" placeholder="0" />
                               </div>
                               <div className="space-y-1.5">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Due Date / Pickup</label>
+                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Due Date</label>
                                 <input type="date" value={newOrder.dueDate} onChange={(e) => setNewOrder({...newOrder, dueDate: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-slate-400 focus:bg-white rounded-sm transition-all font-medium text-sm outline-none" />
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 mt-4">
+                              <div className="space-y-1.5">
+                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Material Cost (KSh)</label>
+                                <input type="number" value={newOrder.materialCost} onChange={(e) => setNewOrder({...newOrder, materialCost: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-slate-400 focus:bg-white rounded-sm transition-all font-bold text-slate-900 outline-none" placeholder="0" />
+                              </div>
+                              <div className="space-y-1.5">
+                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Labor Cost (KSh)</label>
+                                <input type="number" value={newOrder.laborCost} onChange={(e) => setNewOrder({...newOrder, laborCost: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-slate-400 focus:bg-white rounded-sm transition-all font-bold text-slate-900 outline-none" placeholder="0" />
                               </div>
                             </div>
                             

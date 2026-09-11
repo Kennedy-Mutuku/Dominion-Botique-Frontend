@@ -24,7 +24,8 @@ const TailoringPage = () => {
     customer: '', phone: '', isTailoring: true, 
     type: '', fabricType: '', notes: '', amount: '', deposit: '', dueDate: new Date().toISOString().split('T')[0],
     chest: '', waist: '', shoulder: '', sleeve: '', neck: '', length: '', hip: '', thigh: '',
-    customMeasureName: '', customMeasureValue: ''
+    customMeasureName: '', customMeasureValue: '',
+    materialCost: '', laborCost: ''
   };
 
   const getDraft = () => {
@@ -117,22 +118,11 @@ const TailoringPage = () => {
     
     const amountNum = parseFloat(formData.amount || 0);
     const depositNum = parseFloat(formData.deposit || 0);
+    const materialNum = parseFloat(formData.materialCost || 0);
+    const laborNum = parseFloat(formData.laborCost || 0);
     const balanceNum = Math.max(0, amountNum - depositNum);
     const orderId = `ORD-${Date.now().toString().slice(-4)}`;
     
-    // Save to Global Sales
-    const sales = JSON.parse(localStorage.getItem('lucy_sales') || '[]');
-    const newSale = {
-      id: orderId,
-      productName: formData.isTailoring ? formData.type : 'Ready-made / Retail',
-      soldPrice: amountNum,
-      cashCollected: depositNum > 0 ? depositNum : amountNum,
-      profit: amountNum,
-      date: formData.dueDate || new Date().toISOString().split('T')[0],
-      time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit' })
-    };
-    localStorage.setItem('lucy_sales', JSON.stringify([newSale, ...sales]));
-
     // If Tailoring, save to Tailoring Orders
     let updatedOrders = [...orders];
     if (formData.isTailoring) {
@@ -143,6 +133,8 @@ const TailoringPage = () => {
         amount: amountNum,
         deposit: depositNum,
         balance: balanceNum,
+        materialCost: materialNum,
+        laborCost: laborNum,
         timestamp: new Date().toISOString(),
         payments: depositNum > 0 ? [{ amount: depositNum, date: new Date().toISOString(), note: 'Initial Deposit' }] : []
       };
@@ -597,6 +589,19 @@ const TailoringPage = () => {
                           </div>
                         )}
                       </div>
+                      
+                      {formData.isTailoring && (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Material Cost (KSh)</label>
+                            <input type="number" value={formData.materialCost} onChange={(e) => setFormData({...formData, materialCost: e.target.value})} className="w-full px-5 py-3.5 bg-zinc-900/50 border border-zinc-800 rounded-xl focus:border-amber-500/50 transition-all font-bold text-white outline-none" placeholder="0" />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Labor Cost (KSh)</label>
+                            <input type="number" value={formData.laborCost} onChange={(e) => setFormData({...formData, laborCost: e.target.value})} className="w-full px-5 py-3.5 bg-zinc-900/50 border border-zinc-800 rounded-xl focus:border-amber-500/50 transition-all font-bold text-white outline-none" placeholder="0" />
+                          </div>
+                        </div>
+                      )}
                       {(formData.amount || formData.deposit) && (
                         <div className="p-4 bg-zinc-800/80 rounded-xl flex items-center justify-between border border-zinc-700/50">
                           <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Remaining Balance</span>

@@ -253,10 +253,13 @@ const AdminDashboard = () => {
     return sum + Math.max(o.deposit || 0, pSum);
   }, 0);
 
+  const tailoringTotalProfit = tailoringOrders.reduce((sum, o) => sum + ((o.amount || 0) - (o.materialCost || 0) - (o.laborCost || 0)), 0);
+
   const tailoringByDate = tailoringOrders.reduce((acc, o) => {
     const d = o.date || (o.timestamp ? o.timestamp.split('T')[0] : 'Unknown Date');
-    if (!acc[d]) acc[d] = { date: d, revenue: 0, collected: 0, pending: 0 };
+    if (!acc[d]) acc[d] = { date: d, revenue: 0, collected: 0, pending: 0, profit: 0 };
     acc[d].revenue += o.amount || 0;
+    acc[d].profit += ((o.amount || 0) - (o.materialCost || 0) - (o.laborCost || 0));
     
     const pSum = (o.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
     acc[d].collected += Math.max(o.deposit || 0, pSum);
@@ -277,6 +280,7 @@ const AdminDashboard = () => {
 
   const tailoringCards = [
     { label: 'Tailoring Revenue', value: fmt(tailoringEarnedRevenue), icon: <Scissors size={40} />, bg: 'bg-indigo-500' },
+    { label: 'Total Profit', value: fmt(tailoringTotalProfit), icon: <TrendingUp size={40} />, bg: 'bg-amber-500' },
     { label: 'Cash Collected', value: fmt(tailoringCashCollected), icon: <DollarSign size={40} />, bg: 'bg-emerald-500' },
     { label: 'Pending Balances', value: fmt(totalPendingBalance), icon: <ShoppingCart size={40} />, bg: 'bg-rose-500' },
     { label: 'Customers CRM', value: customers.length.toString(), icon: <Users size={40} />, bg: 'bg-[#8b5cf6]' }
@@ -703,7 +707,7 @@ const AdminDashboard = () => {
             <div className="h-[1px] flex-1 bg-slate-200"></div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6 shrink-0 scroll-mt-24">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-6 mb-4 sm:mb-6 shrink-0 scroll-mt-24">
             {tailoringCards.map((card, i) => (
               <div key={i} className={`${card.bg} rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-md relative overflow-hidden flex flex-col justify-between h-24 sm:h-32 transform transition-transform hover:-translate-y-1`}>
                 <div className="relative z-10">
@@ -743,6 +747,7 @@ const AdminDashboard = () => {
                       />
                       <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: 500, paddingTop: '10px' }} />
                       <Line type="monotone" dataKey="revenue" name="Billed Revenue" stroke="#8b5cf6" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="profit" name="Total Profit" stroke="#f59e0b" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
                       <Line type="monotone" dataKey="collected" name="Cash Collected" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
                       <Line type="monotone" dataKey="pending" name="Pending Balances" stroke="#ef4444" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
                     </LineChart>
