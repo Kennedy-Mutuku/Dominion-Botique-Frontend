@@ -342,6 +342,8 @@ const AdminDashboard = () => {
     { label: 'Customers CRM', value: customers.length.toString(), icon: <Users size={40} />, bg: 'bg-[#8b5cf6]' }
   ];
 
+  const combinedNetProfit = totalProfit + tailoringTotalProfit;
+
   const topCards = [
     {
       label: 'Earned Revenue', value: fmt(totalEarnedRevenue),
@@ -362,6 +364,11 @@ const AdminDashboard = () => {
       label: 'Total Profit', value: fmt(totalProfit),
       icon: profitPositive ? <TrendingUp size={40} /> : <TrendingDown size={40} />,
       bg: 'bg-slate-900', // Dark
+    },
+    {
+      label: 'Combined Net Profit', value: fmt(combinedNetProfit),
+      icon: combinedNetProfit >= 0 ? <TrendingUp size={40} /> : <TrendingDown size={40} />,
+      bg: 'bg-rose-500', // Rose
     }
   ];
 
@@ -532,7 +539,7 @@ const AdminDashboard = () => {
         <main className="flex-1 px-4 sm:px-8 py-4 sm:py-6 w-full flex flex-col min-h-0">
           
           {/* Top Cards */}
-          <div id="overview" className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6 shrink-0 scroll-mt-24">
+          <div id="overview" className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-6 mb-4 sm:mb-6 shrink-0 scroll-mt-24">
             {topCards.map((card, i) => (
               <div key={i} className={`${card.bg} rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-md relative overflow-hidden flex flex-col justify-between h-24 sm:h-32 transform transition-transform hover:-translate-y-1`}>
                 <div className="relative z-10">
