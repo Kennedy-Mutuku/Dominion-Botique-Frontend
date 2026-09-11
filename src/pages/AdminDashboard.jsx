@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   TrendingUp, TrendingDown, Package, ShoppingCart, DollarSign,
   BarChart2, LogOut, Calendar, RefreshCw, LayoutDashboard, Users,
   FileText, Scissors, Archive, ArrowRightLeft, PieChart as PieChartIcon,
-  Search, Menu, X, Bell, ChevronRight
+  Search, Menu, X, Bell, ChevronRight, Clock
 } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -57,6 +57,7 @@ const AdminDashboard = () => {
     { label: 'Overview', id: 'overview' },
     { label: 'Profit & Loss', id: 'profit-loss' },
     { label: 'Top Products', id: 'top-products' },
+    { label: 'Daily & Weekly Insights', id: 'insights' },
     { label: 'Recent Sales', id: 'recent-sales' },
     { label: 'Current Stock', id: 'current-stock' },
     { label: 'Tailoring & Customers', id: 'tailoring' },
@@ -241,6 +242,61 @@ const AdminDashboard = () => {
     const qty = (item.quantity || '').toString();
     return name.includes(term) || date.includes(term) || time.includes(term) || buy.includes(term) || sell.includes(term) || qty.includes(term);
   });
+
+  // --- Weekly & Daily Insights Aggregation ---
+  const { weeklyProfitData, dailyProfitData, weeklyCostData, dailyCostData } = useMemo(() => {
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    
+    // Setup Weekly Data structures
+    const wProfitMap = {};
+    const wCostMap = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dStr = d.toISOString().split('T')[0];
+      const shortDay = d.toLocaleDateString('en-US', { weekday: 'short' });
+      wProfitMap[dStr] = { label: shortDay, date: dStr, profit: 0 };
+      wCostMap[dStr] = { label: shortDay, date: dStr, cost: 0 };
+    }
+
+    // Setup Daily Data structures
+    const dProfitMap = {};
+    const dCostMap = {};
+    for (let i = 8; i <= 20; i++) {
+      const hr = i.toString().padStart(2, '0') + ':00';
+      dProfitMap[hr] = { label: hr, profit: 0 };
+      dCostMap[hr] = { label: hr, cost: 0 };
+    }
+
+    // Aggregate Sales (Profit)
+    sales.forEach(s => {
+      if (s.date && wProfitMap[s.date]) wProfitMap[s.date].profit += (s.profit || 0);
+      if (s.date === todayStr && s.time) {
+        const hour = s.time.substring(0, 2) + ':00';
+        if (dProfitMap[hour]) dProfitMap[hour].profit += (s.profit || 0);
+        else dProfitMap[hour] = { label: hour, profit: (s.profit || 0) };
+      }
+    });
+
+    // Aggregate Stock (Cost)
+    stock.forEach(s => {
+      const itemCost = (s.quantity || 0) * (s.buyingPrice || 0);
+      if (s.date && wCostMap[s.date]) wCostMap[s.date].cost += itemCost;
+      if (s.date === todayStr && s.time) {
+        const hour = s.time.substring(0, 2) + ':00';
+        if (dCostMap[hour]) dCostMap[hour].cost += itemCost;
+        else dCostMap[hour] = { label: hour, cost: itemCost };
+      }
+    });
+
+    return {
+      weeklyProfitData: Object.values(wProfitMap),
+      dailyProfitData: Object.values(dProfitMap).sort((a, b) => a.label.localeCompare(b.label)),
+      weeklyCostData: Object.values(wCostMap),
+      dailyCostData: Object.values(dCostMap).sort((a, b) => a.label.localeCompare(b.label))
+    };
+  }, [sales, stock]);
 
   const profitPositive = totalProfit >= 0;
 
@@ -561,6 +617,81 @@ const AdminDashboard = () => {
                   </ResponsiveContainer>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Daily & Weekly Insights */}
+          <div id="insights" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6 scroll-mt-24">
+            {/* Weekly Profit */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-5">
+              <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Calendar size={14} className="text-violet-500" /> Weekly Profit
+              </h3>
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={weeklyProfitData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }} dx={-10} tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} width={35} />
+                    <Tooltip cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 'bold' }} formatter={(value) => [`KSh ${value.toLocaleString()}`, 'Profit']} />
+                    <Line type="monotone" dataKey="profit" stroke="#8b5cf6" strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} activeDot={{ r: 6, fill: '#8b5cf6', stroke: '#fff', strokeWidth: 2 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Daily Profit */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-5">
+              <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Clock size={14} className="text-emerald-500" /> Today's Profit
+              </h3>
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={dailyProfitData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }} dx={-10} tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} width={35} />
+                    <Tooltip cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 'bold' }} formatter={(value) => [`KSh ${value.toLocaleString()}`, 'Profit']} />
+                    <Line type="monotone" dataKey="profit" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} activeDot={{ r: 6, fill: '#10b981', stroke: '#fff', strokeWidth: 2 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Weekly Cost */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-5">
+              <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Calendar size={14} className="text-rose-500" /> Weekly Costs
+              </h3>
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={weeklyCostData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }} dx={-10} tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} width={35} />
+                    <Tooltip cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 'bold' }} formatter={(value) => [`KSh ${value.toLocaleString()}`, 'Cost']} />
+                    <Line type="monotone" dataKey="cost" stroke="#f43f5e" strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} activeDot={{ r: 6, fill: '#f43f5e', stroke: '#fff', strokeWidth: 2 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Daily Cost */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-5">
+              <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Clock size={14} className="text-orange-500" /> Today's Costs
+              </h3>
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={dailyCostData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }} dx={-10} tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} width={35} />
+                    <Tooltip cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 'bold' }} formatter={(value) => [`KSh ${value.toLocaleString()}`, 'Cost']} />
+                    <Line type="monotone" dataKey="cost" stroke="#f97316" strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} activeDot={{ r: 6, fill: '#f97316', stroke: '#fff', strokeWidth: 2 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
 
