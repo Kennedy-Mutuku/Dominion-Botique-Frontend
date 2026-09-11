@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { ShoppingCart, ArrowLeft, Clock, Calendar, DollarSign, Tag, Search, TrendingDown, Percent } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ShoppingCart, ArrowLeft, Clock, Calendar, DollarSign, Tag, Search, TrendingDown, Percent, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const OutflowPage = () => {
   const navigate = useNavigate();
@@ -94,6 +95,52 @@ const OutflowPage = () => {
     localStorage.removeItem('lucy_draft_outflow');
   };
 
+  // --- Graph Aggregation Logic ---
+  const { weeklyData, dailyData } = useMemo(() => {
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    
+    // 1. Weekly Data (Last 7 Days)
+    const weekMap = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dStr = d.toISOString().split('T')[0];
+      const shortDay = d.toLocaleDateString('en-US', { weekday: 'short' });
+      weekMap[dStr] = { label: shortDay, date: dStr, profit: 0 };
+    }
+
+    // 2. Daily Data (Today, by Hour)
+    const dayMap = {};
+    for (let i = 8; i <= 20; i++) {
+      const hr = i.toString().padStart(2, '0') + ':00';
+      dayMap[hr] = { label: hr, profit: 0 };
+    }
+
+    sales.forEach(s => {
+      // Weekly Profit
+      if (s.date && weekMap[s.date]) {
+        weekMap[s.date].profit += (s.profit || 0);
+      }
+      
+      // Daily Profit (only today)
+      if (s.date === todayStr && s.time) {
+        const hour = s.time.substring(0, 2) + ':00'; // group by hour
+        if (dayMap[hour]) {
+          dayMap[hour].profit += (s.profit || 0);
+        } else {
+          // If out of 8-20 range, create it
+          dayMap[hour] = { label: hour, profit: (s.profit || 0) };
+        }
+      }
+    });
+
+    return {
+      weeklyData: Object.values(weekMap),
+      dailyData: Object.values(dayMap).sort((a, b) => a.label.localeCompare(b.label))
+    };
+  }, [sales]);
+
   return (
     <div className="min-h-screen bg-[#fcfcfc] text-slate-900 pb-20">
       {/* Premium Header */}
@@ -113,10 +160,32 @@ const OutflowPage = () => {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-8">
+      <main className="max-w-[1400px] mx-auto px-4 py-8 flex flex-col xl:grid xl:grid-cols-4 gap-6 items-start">
         
-        {/* Sale Entry Form Card */}
-        <section className="bg-white rounded-sm p-6 shadow-[0_8px_30px_rgba(139,92,246,0.06)] border border-violet-50/50 mb-10">
+        {/* LEFT GRAPH: Weekly Profit */}
+        <div className="order-2 xl:order-1 xl:col-span-1 w-full bg-white rounded-sm p-5 shadow-sm border border-violet-100 xl:sticky xl:top-24">
+          <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2"><Calendar size={14} className="text-violet-500" /> Weekly Profit</h3>
+          <div className="h-[250px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={weeklyData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }} dx={-10} tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} width={35} />
+                <Tooltip 
+                  cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }}
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 'bold' }}
+                  formatter={(value) => [`KSh ${value.toLocaleString()}`, 'Profit']}
+                />
+                <Line type="monotone" dataKey="profit" stroke="#8b5cf6" strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} activeDot={{ r: 6, fill: '#8b5cf6', stroke: '#fff', strokeWidth: 2 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* CENTER CONTENT */}
+        <div className="order-1 xl:order-2 xl:col-span-2 w-full max-w-2xl mx-auto">
+          {/* Sale Entry Form Card */}
+          <section className="bg-white rounded-sm p-6 shadow-[0_8px_30px_rgba(139,92,246,0.06)] border border-violet-50/50 mb-10">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-3 bg-violet-100 text-violet-600 rounded-sm">
               <ShoppingCart size={24} />
@@ -335,6 +404,28 @@ const OutflowPage = () => {
                 </div>
               ))
             )}
+          </div>
+        </div>
+
+          </div>
+
+        {/* RIGHT GRAPH: Daily Profit */}
+        <div className="order-3 xl:order-3 xl:col-span-1 w-full bg-white rounded-sm p-5 shadow-sm border border-emerald-100 xl:sticky xl:top-24">
+          <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2"><Clock size={14} className="text-emerald-500" /> Today's Profit</h3>
+          <div className="h-[250px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={dailyData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }} dx={-10} tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} width={35} />
+                <Tooltip 
+                  cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }}
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 'bold' }}
+                  formatter={(value) => [`KSh ${value.toLocaleString()}`, 'Profit']}
+                />
+                <Line type="monotone" dataKey="profit" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} activeDot={{ r: 6, fill: '#10b981', stroke: '#fff', strokeWidth: 2 }} />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
