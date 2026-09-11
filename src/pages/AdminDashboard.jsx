@@ -383,6 +383,22 @@ const AdminDashboard = () => {
     },
   };
 
+  const handleClearDatabase = () => {
+    const userInput = window.prompt("WARNING: This will permanently delete ALL data (Stock, Sales, Tailoring, Customers). Type 'Delete' to confirm:");
+    if (userInput === 'Delete') {
+      localStorage.removeItem('lucy_stock');
+      localStorage.removeItem('lucy_sales');
+      localStorage.removeItem('lucy_tailoring_orders');
+      localStorage.removeItem('lucy_customers');
+      localStorage.removeItem('lucy_notifications');
+      
+      // reload window to reset all state
+      window.location.reload();
+    } else if (userInput !== null) {
+      alert("Incorrect confirmation. Database was NOT cleared.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans" onClick={handleBackgroundClick}>
       
@@ -1032,6 +1048,16 @@ const AdminDashboard = () => {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Database Reset */}
+          <div className="mt-8 flex justify-center pb-8">
+            <button
+              onClick={handleClearDatabase}
+              className="text-[10px] uppercase tracking-widest font-bold text-rose-400 border border-rose-200 bg-rose-50 hover:bg-rose-500 hover:text-white px-4 py-2 rounded transition-colors"
+            >
+              Clear Database
+            </button>
           </div>
         </main>
     </div>
