@@ -625,7 +625,7 @@ const AdminDashboard = () => {
             {/* Weekly Profit */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-5">
               <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Calendar size={14} className="text-violet-500" /> Weekly Profit
+                <Calendar size={14} className="text-violet-500" /> Sales Profit (Past 7 Days)
               </h3>
               <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
@@ -643,7 +643,7 @@ const AdminDashboard = () => {
             {/* Daily Profit */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-5">
               <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Clock size={14} className="text-emerald-500" /> Today's Profit
+                <Clock size={14} className="text-emerald-500" /> Sales Profit (Today by Hour)
               </h3>
               <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
@@ -661,7 +661,7 @@ const AdminDashboard = () => {
             {/* Weekly Cost */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-5">
               <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Calendar size={14} className="text-rose-500" /> Weekly Costs
+                <Calendar size={14} className="text-rose-500" /> Stock Purchases (Past 7 Days)
               </h3>
               <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
@@ -679,7 +679,7 @@ const AdminDashboard = () => {
             {/* Daily Cost */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-5">
               <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Clock size={14} className="text-orange-500" /> Today's Costs
+                <Clock size={14} className="text-orange-500" /> Stock Purchases (Today by Hour)
               </h3>
               <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
