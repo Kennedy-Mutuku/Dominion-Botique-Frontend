@@ -154,21 +154,24 @@ const TailoringPage = () => {
     // Auto-Sync to Customers CRM
     const existingIndex = customers.findIndex(c => c.phone === formData.phone || c.name.toLowerCase() === formData.customer.toLowerCase());
     
-    const purchaseLog = {
-      id: orderId,
-      item: formData.isTailoring ? formData.type : 'Ready-made / Retail',
-      amount: amountNum,
-      deposit: depositNum,
-      balance: formData.isTailoring ? balanceNum : 0,
-      date: formData.dueDate || new Date().toISOString().split('T')[0],
-      isTailoring: formData.isTailoring
-    };
-
     const newMeasurements = formData.isTailoring ? {
       chest: formData.chest, waist: formData.waist, shoulder: formData.shoulder, sleeve: formData.sleeve,
       neck: formData.neck, length: formData.length, hip: formData.hip, thigh: formData.thigh,
       [formData.customMeasureName]: formData.customMeasureValue
     } : {};
+
+    const purchaseLog = {
+      id: orderId,
+      item: formData.type,
+      amount: amountNum,
+      deposit: depositNum,
+      balance: formData.isTailoring ? (amountNum - depositNum) : 0,
+      date: new Date().toISOString(),
+      isTailoring: formData.isTailoring,
+      notes: formData.notes,
+      measurements: newMeasurements,
+      payments: formData.isTailoring && depositNum > 0 ? [{ amount: depositNum, date: new Date().toISOString(), note: 'Initial Deposit' }] : []
+    };
 
     let updatedCustomers = [...customers];
 

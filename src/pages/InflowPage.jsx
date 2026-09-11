@@ -267,12 +267,12 @@ const InflowPage = () => {
           </div>
           
           <div className="space-y-4">
-            {stock.filter(item => item.name.toLowerCase().includes(listSearchQuery.toLowerCase()) || item.date.includes(listSearchQuery)).length === 0 ? (
+            {stock.filter(item => (item.name || '').toLowerCase().includes(listSearchQuery.toLowerCase()) || (item.date || '').includes(listSearchQuery)).length === 0 ? (
               <div className="text-center py-10 bg-slate-50 rounded-sm border border-slate-200">
                 <p className="text-sm text-slate-500 font-medium">No matching stock found.</p>
               </div>
             ) : (
-              stock.filter(item => item.name.toLowerCase().includes(listSearchQuery.toLowerCase()) || item.date.includes(listSearchQuery)).map((item, index) => (
+              stock.filter(item => (item.name || '').toLowerCase().includes(listSearchQuery.toLowerCase()) || (item.date || '').includes(listSearchQuery)).map((item, index) => (
                 <div key={item.id} className="bg-white p-5 rounded-sm shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-3">

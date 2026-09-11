@@ -294,17 +294,17 @@ const OutflowPage = () => {
           </div>
           
           <div className="space-y-4">
-            {sales.filter(sale => sale.name.toLowerCase().includes(listSearchQuery.toLowerCase()) || sale.date.includes(listSearchQuery)).length === 0 ? (
+            {sales.filter(sale => (sale.name || sale.productName || '').toLowerCase().includes(listSearchQuery.toLowerCase()) || (sale.date || '').includes(listSearchQuery)).length === 0 ? (
               <div className="text-center py-10 bg-slate-50 rounded-sm border border-dashed border-slate-200">
                 <p className="text-sm text-slate-500 font-medium">No matching sales found.</p>
               </div>
             ) : (
-              sales.filter(sale => sale.name.toLowerCase().includes(listSearchQuery.toLowerCase()) || sale.date.includes(listSearchQuery)).map((sale, index) => (
+              sales.filter(sale => (sale.name || sale.productName || '').toLowerCase().includes(listSearchQuery.toLowerCase()) || (sale.date || '').includes(listSearchQuery)).map((sale, index) => (
                 <div key={sale.id} className="bg-white p-5 rounded-sm shadow-sm border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-3">
                       <span className="bg-violet-50 text-violet-600 font-black text-[10px] px-2 py-1 rounded-sm">#{index + 1}</span>
-                      <h4 className="font-bold text-slate-900">{sale.name}</h4>
+                      <h4 className="font-bold text-slate-900">{sale.name || sale.productName}</h4>
                     </div>
                     <div className="flex items-center gap-3 mt-2 flex-wrap">
                       <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">1 pc</span>

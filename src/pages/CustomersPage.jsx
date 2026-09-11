@@ -3,7 +3,7 @@ import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Users, Search, Phone, History, Ruler, ChevronRight, UserPlus, X, ShoppingCart, Scissors, CreditCard
+  Users, Search, Phone, History, Ruler, ChevronRight, UserPlus, X, ShoppingCart, Scissors, CreditCard, Edit2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -18,6 +18,10 @@ const CustomersPage = () => {
   const [paymentOrder, setPaymentOrder] = useState(null);
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentNote, setPaymentNote] = useState('Partial Payment');
+
+  // Edit Order state
+  const [editingOrderDetails, setEditingOrderDetails] = useState(null);
+  const [editForm, setEditForm] = useState({});
 
   const [customers, setCustomers] = useState(() => {
     const saved = localStorage.getItem('lucy_customers');
@@ -181,6 +185,12 @@ const CustomersPage = () => {
     const existingIndex = customers.findIndex(c => c.phone === newOrder.phone || c.name.toLowerCase() === newOrder.name.toLowerCase());
     let updatedCustomers = [...customers];
     
+    const newMeasurements = newOrder.isTailoring ? {
+      chest: newOrder.chest, waist: newOrder.waist, shoulder: newOrder.shoulder, sleeve: newOrder.sleeve,
+      neck: newOrder.neck, length: newOrder.length, hip: newOrder.hip, thigh: newOrder.thigh,
+      [newOrder.customMeasureName]: newOrder.customMeasureValue
+    } : {};
+
     const purchaseLog = {
       id: orderId,
       item: newOrder.item,
@@ -189,14 +199,10 @@ const CustomersPage = () => {
       balance: newOrder.isTailoring ? (amountNum - depositNum) : 0,
       date: newOrder.date,
       isTailoring: newOrder.isTailoring,
+      notes: newOrder.notes,
+      measurements: newMeasurements,
       payments: (newOrder.isTailoring && depositNum > 0) ? [{ amount: depositNum, date: new Date().toISOString(), note: 'Initial Deposit' }] : []
     };
-
-    const newMeasurements = newOrder.isTailoring ? {
-      chest: newOrder.chest, waist: newOrder.waist, shoulder: newOrder.shoulder, sleeve: newOrder.sleeve,
-      neck: newOrder.neck, length: newOrder.length, hip: newOrder.hip, thigh: newOrder.thigh,
-      [newOrder.customMeasureName]: newOrder.customMeasureValue
-    } : {};
 
     if (existingIndex >= 0) {
       const c = updatedCustomers[existingIndex];
@@ -282,6 +288,54 @@ const CustomersPage = () => {
     setPaymentOrder(null);
     setPaymentAmount('');
     setPaymentNote('Partial Payment');
+  };
+
+  const handleSaveOrderEdit = () => {
+    let tailOrders = JSON.parse(localStorage.getItem('lucy_tailoring_orders') || '[]');
+    let updatedCustomers = [...customers];
+    
+    // update customer
+    const custIndex = updatedCustomers.findIndex(c => c.id === historyCustomer.id);
+    if (custIndex >= 0) {
+      const histIndex = updatedCustomers[custIndex].history.findIndex(x => x.id === editingOrderDetails);
+      if (histIndex >= 0) {
+        const h = updatedCustomers[custIndex].history[histIndex];
+        const newAmount = parseFloat(editForm.amount) || 0;
+        const newBalance = Math.max(0, newAmount - (h.deposit || 0));
+        
+        updatedCustomers[custIndex].history[histIndex] = {
+           ...h,
+           item: editForm.item,
+           amount: newAmount,
+           balance: h.isTailoring ? newBalance : 0,
+           notes: editForm.notes,
+           measurements: editForm.measurements
+        };
+      }
+      setCustomers(updatedCustomers);
+      setHistoryCustomer(updatedCustomers[custIndex]);
+      localStorage.setItem('lucy_customers', JSON.stringify(updatedCustomers));
+    }
+    
+    // update tailOrders if it exists
+    const orderIndex = tailOrders.findIndex(o => o.id === editingOrderDetails);
+    if (orderIndex >= 0) {
+      const o = tailOrders[orderIndex];
+      const newAmount = parseFloat(editForm.amount) || 0;
+      const newBalance = Math.max(0, newAmount - (o.deposit || 0));
+      
+      tailOrders[orderIndex] = {
+         ...o,
+         type: editForm.item,
+         amount: newAmount,
+         balance: newBalance,
+         notes: editForm.notes,
+         ...editForm.measurements
+      };
+      localStorage.setItem('lucy_tailoring_orders', JSON.stringify(tailOrders));
+    }
+
+    setEditingOrderDetails(null);
   };
 
   return (
@@ -417,7 +471,7 @@ const CustomersPage = () => {
                 <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                   <div>
                     <h2 className="text-xl font-black text-slate-900">{historyCustomer.name}'s History</h2>
-                    <p className="text-slate-500 font-bold text-[10px] uppercase tracking-widest mt-1">Transaction Log</p>
+                    <p className="text-slate-500 font-bold text-[10px] uppercase tracking-widest mt-1">Transaction Log • {historyCustomer.phone}</p>
                   </div>
                   <button onClick={() => setHistoryCustomer(null)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors">
                     <X size={20} strokeWidth={2} />
@@ -429,36 +483,132 @@ const CustomersPage = () => {
                   ) : (
                     <div className="space-y-3">
                       {historyCustomer.history.map((h, i) => (
-                        <div key={i} className="flex flex-col p-4 border border-slate-200 rounded-sm hover:border-slate-300 transition-colors bg-white gap-3">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <div className={`w-10 h-10 rounded-sm flex items-center justify-center border ${h.isTailoring ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-slate-50 text-slate-600 border-slate-200'}`}>
-                                {h.isTailoring ? <Scissors size={18} /> : <ShoppingCart size={18} />}
-                              </div>
-                              <div>
-                                <h4 className="font-bold text-slate-800 text-sm">{h.item}</h4>
-                                <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mt-0.5">{new Date(h.date).toLocaleDateString()} • {h.id}</p>
-                              </div>
-                            </div>
-                            <span className="font-black text-slate-900 text-sm">KSh {h.amount?.toLocaleString()}</span>
-                          </div>
+                        <div key={i} className="flex flex-col p-4 border border-slate-200 rounded-sm hover:border-slate-300 transition-colors bg-white gap-3 relative">
                           
-                          {/* Payment Status for this order */}
-                          {h.isTailoring && (
-                            <div className="flex items-center justify-between mt-2 pt-3 border-t border-slate-100">
-                              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex flex-col gap-1">
-                                <span>Deposit: <span className="text-slate-700">KSh {h.deposit?.toLocaleString()}</span></span>
-                                <span>Balance: <span className={h.balance > 0 ? "text-rose-500" : "text-emerald-500"}>KSh {h.balance?.toLocaleString()}</span></span>
+                          {/* Edit Button */}
+                          {!editingOrderDetails && (
+                            <button 
+                              onClick={() => {
+                                setEditingOrderDetails(h.id);
+                                setEditForm({
+                                  item: h.item || '',
+                                  amount: h.amount || 0,
+                                  notes: h.notes || '',
+                                  measurements: h.measurements ? { ...h.measurements } : {}
+                                });
+                              }}
+                              className="absolute top-4 right-4 text-slate-400 hover:text-slate-800 transition-colors"
+                              title="Edit Details"
+                            >
+                              <Edit2 size={16} />
+                            </button>
+                          )}
+
+                          {editingOrderDetails === h.id ? (
+                            <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
+                              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                                <h4 className="text-xs font-black uppercase tracking-widest text-slate-800">Edit Transaction: {h.id}</h4>
+                                <button onClick={() => setEditingOrderDetails(null)} className="text-slate-400 hover:text-rose-500"><X size={16} /></button>
                               </div>
-                              {h.balance > 0 && (
-                                <button 
-                                  onClick={() => setPaymentOrder(h)}
-                                  className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-sm font-bold text-[10px] uppercase tracking-widest transition-colors flex items-center gap-1.5 border border-slate-200"
-                                >
-                                  Pay Balance
-                                </button>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Item / Service</label>
+                                  <input type="text" value={editForm.item} onChange={e => setEditForm({...editForm, item: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-sm outline-none focus:border-slate-400" />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Amount</label>
+                                  <input type="number" value={editForm.amount} onChange={e => setEditForm({...editForm, amount: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-sm outline-none focus:border-slate-400 font-bold" />
+                                </div>
+                              </div>
+                              <div className="space-y-1.5">
+                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Notes</label>
+                                <textarea value={editForm.notes} onChange={e => setEditForm({...editForm, notes: e.target.value})} rows="2" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-sm outline-none focus:border-slate-400 resize-none"></textarea>
+                              </div>
+
+                              {h.isTailoring && (
+                                <div className="space-y-1.5">
+                                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Measurements</label>
+                                  <div className="grid grid-cols-4 gap-2">
+                                    {['chest', 'waist', 'shoulder', 'sleeve', 'neck', 'length', 'hip', 'thigh'].map(m => (
+                                      <div key={m} className="flex flex-col">
+                                        <span className="text-[8px] uppercase font-bold text-slate-400">{m}</span>
+                                        <input type="text" value={editForm.measurements[m] || ''} onChange={e => setEditForm({...editForm, measurements: {...editForm.measurements, [m]: e.target.value}})} className="px-2 py-1 bg-white border border-slate-200 rounded-sm text-xs text-center outline-none focus:border-slate-400" placeholder="-" />
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div className="mt-2 flex flex-col gap-1">
+                                    <span className="text-[8px] uppercase font-bold text-slate-400">Custom / Other Details (Comma Separated Key:Value)</span>
+                                    {/* Simple custom fields renderer */}
+                                    {Object.entries(editForm.measurements).filter(([k]) => !['chest', 'waist', 'shoulder', 'sleeve', 'neck', 'length', 'hip', 'thigh'].includes(k)).map(([k, v]) => (
+                                      <div key={k} className="flex gap-2">
+                                        <input type="text" disabled value={k} className="w-1/3 px-2 py-1 bg-slate-100 border border-slate-200 rounded-sm text-xs outline-none" />
+                                        <input type="text" value={v} onChange={e => setEditForm({...editForm, measurements: {...editForm.measurements, [k]: e.target.value}})} className="flex-1 px-2 py-1 bg-white border border-slate-200 rounded-sm text-xs outline-none focus:border-slate-400" />
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
                               )}
+                              
+                              <button onClick={handleSaveOrderEdit} className="w-full py-2.5 bg-slate-900 text-white font-bold text-[10px] uppercase tracking-widest rounded-sm hover:bg-slate-800 transition-colors mt-2">
+                                Save Details
+                              </button>
                             </div>
+                          ) : (
+                            <>
+                              <div className="flex items-center justify-between pr-6">
+                                <div className="flex items-center gap-4">
+                                  <div className={`w-10 h-10 rounded-sm flex items-center justify-center border ${h.isTailoring ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+                                    {h.isTailoring ? <Scissors size={18} /> : <ShoppingCart size={18} />}
+                                  </div>
+                                  <div>
+                                    <h4 className="font-bold text-slate-800 text-sm">{h.item}</h4>
+                                    <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mt-0.5">
+                                      {h.date ? new Date(h.date).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : 'N/A'} • {h.id}
+                                    </p>
+                                  </div>
+                                </div>
+                                <span className="font-black text-slate-900 text-sm">KSh {h.amount?.toLocaleString()}</span>
+                              </div>
+
+                              {/* Order Notes */}
+                              {h.notes && (
+                                <div className="mt-2 text-xs text-slate-600 bg-slate-50 p-2 rounded-sm border border-slate-100">
+                                  <span className="font-bold text-slate-800">Notes:</span> {h.notes}
+                                </div>
+                              )}
+
+                              {/* Specific Order Measurements */}
+                              {h.measurements && Object.keys(h.measurements).some(k => h.measurements[k]) && (
+                                <div className="mt-2 pt-2 border-t border-slate-100">
+                                  <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Measurements for this order</h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {Object.entries(h.measurements).filter(([_, v]) => v).map(([k, v]) => (
+                                      <span key={k} className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-sm border border-slate-200">
+                                        {k}: {v}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Payment Status for this order */}
+                              {h.isTailoring && (
+                                <div className="flex items-center justify-between mt-2 pt-3 border-t border-slate-100">
+                                  <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex flex-col gap-1">
+                                    <span>Deposit: <span className="text-slate-700">KSh {h.deposit?.toLocaleString()}</span></span>
+                                    <span>Balance: <span className={h.balance > 0 ? "text-rose-500" : "text-emerald-500"}>KSh {h.balance?.toLocaleString()}</span></span>
+                                  </div>
+                                  {h.balance > 0 && (
+                                    <button 
+                                      onClick={() => setPaymentOrder(h)}
+                                      className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-sm font-bold text-[10px] uppercase tracking-widest transition-colors flex items-center gap-1.5 border border-slate-200"
+                                    >
+                                      Pay Balance
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+                            </>
                           )}
 
                           {/* Quick Payment UI Inline */}
@@ -644,6 +794,10 @@ const CustomersPage = () => {
                         <input type="number" value={newOrder.amount} onChange={(e) => {setNewOrder({...newOrder, amount: e.target.value}); setFormErrors(p => ({...p, amount: null}))}} className={`w-full px-4 py-3 bg-white border ${formErrors.amount ? 'border-rose-400' : 'border-slate-200 focus:border-slate-400'} rounded-sm transition-all font-bold text-slate-900 outline-none`} placeholder="0" />
                       </div>
                     </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Additional Notes / Description</label>
+                      <textarea value={newOrder.notes} onChange={(e) => setNewOrder({...newOrder, notes: e.target.value})} rows="2" className="w-full px-4 py-3 bg-white border border-slate-200 focus:border-slate-400 rounded-sm transition-all font-medium text-sm outline-none resize-none" placeholder="Details about this purchase (e.g. shirt style, special requests)..."></textarea>
+                    </div>
                   </div>
 
                   {/* Tailoring Toggle */}
@@ -704,13 +858,7 @@ const CustomersPage = () => {
                             </div>
                           </div>
 
-                          {/* Notes */}
-                          <div>
-                            <div className="space-y-1.5">
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Additional Notes</label>
-                              <textarea value={newOrder.notes} onChange={(e) => setNewOrder({...newOrder, notes: e.target.value})} rows="2" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-slate-400 focus:bg-white rounded-sm transition-all font-medium text-sm outline-none resize-none" placeholder="Special requests, partial pickups, etc..."></textarea>
-                            </div>
-                          </div>
+                          {/* Notes removed from here - moved to Purchase Details */}
 
                           {/* Financials & Dates */}
                           <div className="pt-6 border-t border-slate-100">

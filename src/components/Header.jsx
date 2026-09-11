@@ -1,9 +1,13 @@
 import React from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, ArrowLeft } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../assets/logo bq.png';
 import dominionLogo from '../assets/dominion softwares main logo.png';
 
 const Header = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-[60] bg-white border-b border-rose-50 shadow-sm">
 
@@ -24,6 +28,17 @@ const Header = () => {
 
       <div className="flex flex-col items-center justify-center relative max-w-5xl mx-auto px-4 py-3">
         
+        {/* Back Button */}
+        {location.pathname !== '/' && location.pathname !== '/login' && (
+          <button 
+            onClick={() => navigate(-1)}
+            className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-slate-400 hover:text-slate-900 transition-colors bg-slate-50 hover:bg-slate-100 px-3 py-2 rounded-sm border border-slate-100"
+          >
+            <ArrowLeft size={14} />
+            <span className="text-[9px] font-black uppercase tracking-widest hidden sm:inline">Back</span>
+          </button>
+        )}
+
         {/* Top Decoration & Logo */}
         <div className="flex items-center justify-center w-full gap-3 md:gap-6 mb-2">
           <div className="hidden sm:flex items-center w-full max-w-[120px] md:max-w-[200px] opacity-60">
