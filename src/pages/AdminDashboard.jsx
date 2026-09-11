@@ -59,6 +59,7 @@ const AdminDashboard = () => {
     { label: 'Top Products', id: 'top-products' },
     { label: 'Recent Sales', id: 'recent-sales' },
     { label: 'Current Stock', id: 'current-stock' },
+    { label: 'Tailoring & Customers', id: 'tailoring' },
   ];
 
   const scrollToSection = (id) => {
@@ -693,7 +694,7 @@ const AdminDashboard = () => {
           {/*                 TAILORING & CUSTOMERS                     */}
           {/* ========================================================= */}
           
-          <div className="mt-10 mb-6 flex items-center justify-center gap-4">
+          <div id="tailoring" className="mt-10 mb-6 flex items-center justify-center gap-4 scroll-mt-24">
             <div className="h-[1px] flex-1 bg-slate-200"></div>
             <h2 className="text-sm font-black text-slate-800 uppercase tracking-[0.2em] px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm flex items-center gap-2">
               <Scissors size={16} className="text-indigo-500" />
