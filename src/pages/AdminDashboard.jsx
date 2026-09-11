@@ -176,8 +176,8 @@ const AdminDashboard = () => {
     navigate('/login');
   };
 
-  // Filtered sales by date range (if no date is set, show all)
   const filteredSales = sales.filter(s => {
+    if (!s.productId) return false; // Filter out Tailoring/Customer objects leaked into global sales
     const afterFrom = fromDate ? s.date >= fromDate : true;
     const beforeTo = toDate ? s.date <= toDate : true;
     return afterFrom && beforeTo;
@@ -261,18 +261,8 @@ const AdminDashboard = () => {
       bg: 'bg-[#10b981]', // Green
     },
     {
-      label: 'Pending Balances', value: fmt(totalPendingBalance),
-      icon: <ShoppingCart size={40} />,
-      bg: 'bg-rose-500', // Rose
-    },
-    {
-      label: 'Active Orders', value: activeTailoring.length.toString(),
+      label: 'Stock Value', value: fmt(stockValue),
       icon: <Package size={40} />,
-      bg: 'bg-amber-500', // Amber
-    },
-    {
-      label: 'Customers', value: customers.length.toString(),
-      icon: <Users size={40} />,
       bg: 'bg-[#8b5cf6]', // Purple
     },
     {
@@ -449,7 +439,7 @@ const AdminDashboard = () => {
         <main className="flex-1 px-4 sm:px-8 py-4 sm:py-6 w-full flex flex-col min-h-0">
           
           {/* Top Cards */}
-          <div id="overview" className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6 shrink-0 scroll-mt-24">
+          <div id="overview" className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6 shrink-0 scroll-mt-24">
             {topCards.map((card, i) => (
               <div key={i} className={`${card.bg} rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-md relative overflow-hidden flex flex-col justify-between h-24 sm:h-32 transform transition-transform hover:-translate-y-1`}>
                 <div className="relative z-10">

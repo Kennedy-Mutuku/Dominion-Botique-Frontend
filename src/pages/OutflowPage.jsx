@@ -44,7 +44,11 @@ const OutflowPage = () => {
     const savedStock = localStorage.getItem('lucy_stock');
     const savedSales = localStorage.getItem('lucy_sales');
     if (savedStock) setStock(JSON.parse(savedStock));
-    if (savedSales) setSales(JSON.parse(savedSales));
+    if (savedSales) {
+      const parsedSales = JSON.parse(savedSales);
+      // Clean up any accidentally leaked Tailoring orders
+      setSales(parsedSales.filter(s => s.productId));
+    }
   }, []);
 
   const handleSubmit = (e) => {
