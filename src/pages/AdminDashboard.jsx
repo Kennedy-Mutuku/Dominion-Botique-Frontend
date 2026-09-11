@@ -688,28 +688,7 @@ const AdminDashboard = () => {
 
           </div>
 
-          {/* Customer CRM Table */}
-          <div id="customer-crm" className="mt-4 sm:mt-6 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-[300px] shrink-0 scroll-mt-24">
-            <div className="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2"><Users size={18} className="text-purple-500" /> Customer Directory</h3>
-              <Link to="/customers" className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">
-                View Full CRM <ChevronRight size={14} />
-              </Link>
-            </div>
-            {customers.length === 0 ? (
-              <div className="p-10 text-center text-slate-400 text-sm flex-1">No customers recorded yet</div>
-            ) : (
-              <div className="flex-1 overflow-auto p-2">
-                <table className="w-full text-left border-collapse min-w-[600px]">
-                  <thead>
-                    <tr>
-                      <th className="pl-4 pr-2 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 w-8">#</th>
-                      <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Client Name</th>
-                      <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Contact</th>
-                      <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Last Visit</th>
-                      <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-right">Lifetime Value</th>
-                    </tr>
-                  </thead>
+
           {/* ========================================================= */}
           {/*                 TAILORING & CUSTOMERS                     */}
           {/* ========================================================= */}
