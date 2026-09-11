@@ -142,18 +142,6 @@ const CustomersPage = () => {
     const depositNum = parseFloat(newOrder.deposit || 0);
     const orderId = `ORD-${Date.now().toString().slice(-4)}`;
 
-    // 1. Save to global Sales
-    const sales = JSON.parse(localStorage.getItem('lucy_sales') || '[]');
-    const newSale = {
-      id: orderId,
-      productName: newOrder.item,
-      soldPrice: amountNum, // The total value of the service/item
-      cashCollected: depositNum > 0 ? depositNum : amountNum, // If no deposit, assume paid in full for standard items
-      profit: amountNum,
-      date: newOrder.date,
-      time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit' })
-    };
-    localStorage.setItem('lucy_sales', JSON.stringify([newSale, ...sales]));
 
     // 2. If Tailoring, save to Tailoring Orders
     let tailOrders = JSON.parse(localStorage.getItem('lucy_tailoring_orders') || '[]');
@@ -242,7 +230,6 @@ const CustomersPage = () => {
     if (!amt || amt <= 0 || !paymentOrder) return;
     
     let tailOrders = JSON.parse(localStorage.getItem('lucy_tailoring_orders') || '[]');
-    let sales = JSON.parse(localStorage.getItem('lucy_sales') || '[]');
     let updatedCustomers = [...customers];
     
     // Find order in global tailoring
@@ -256,17 +243,6 @@ const CustomersPage = () => {
       localStorage.setItem('lucy_tailoring_orders', JSON.stringify(tailOrders));
     }
 
-    // Add to Sales
-    const paymentSale = {
-      id: `PAY-${Date.now().toString().slice(-4)}`,
-      productName: `Payment for ${paymentOrder.id}`,
-      soldPrice: 0,
-      cashCollected: amt,
-      profit: 0,
-      date: new Date().toISOString().split('T')[0],
-      time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit' })
-    };
-    localStorage.setItem('lucy_sales', JSON.stringify([paymentSale, ...sales]));
 
     // Update Customer History directly in state & localstorage
     const custIndex = updatedCustomers.findIndex(c => c.id === historyCustomer.id);
