@@ -243,11 +243,43 @@ const AdminDashboard = () => {
 
   const profitPositive = totalProfit >= 0;
 
-  const activeTailoring = tailoringOrders.filter(o => o.status !== 'Ready');
-  const activeTailoringRevenue = activeTailoring.reduce((sum, o) => sum + (o.amount || 0), 0);
-  
-  // Calculate Pending Balances from all tailoring orders
+  // Tailoring Analytics State
   const totalPendingBalance = tailoringOrders.reduce((sum, o) => sum + (o.balance || 0), 0);
+
+  const tailoringEarnedRevenue = tailoringOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
+  const tailoringCashCollected = tailoringOrders.reduce((sum, o) => {
+    const pSum = (o.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
+    return sum + Math.max(o.deposit || 0, pSum);
+  }, 0);
+
+  const tailoringByDate = tailoringOrders.reduce((acc, o) => {
+    const d = o.date || (o.timestamp ? o.timestamp.split('T')[0] : 'Unknown Date');
+    if (!acc[d]) acc[d] = { date: d, revenue: 0, collected: 0, pending: 0 };
+    acc[d].revenue += o.amount || 0;
+    
+    const pSum = (o.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
+    acc[d].collected += Math.max(o.deposit || 0, pSum);
+    acc[d].pending += o.balance || 0;
+    return acc;
+  }, {});
+  const tailoringTrendData = Object.values(tailoringByDate).sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+  const serviceRevenue = tailoringOrders.reduce((acc, o) => {
+    const name = o.type || 'Unknown';
+    acc[name] = (acc[name] || 0) + (o.amount || 0);
+    return acc;
+  }, {});
+  const topServices = Object.entries(serviceRevenue)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([name, revenue]) => ({ name, revenue }));
+
+  const tailoringCards = [
+    { label: 'Tailoring Revenue', value: fmt(tailoringEarnedRevenue), icon: <Scissors size={40} />, bg: 'bg-indigo-500' },
+    { label: 'Cash Collected', value: fmt(tailoringCashCollected), icon: <DollarSign size={40} />, bg: 'bg-emerald-500' },
+    { label: 'Pending Balances', value: fmt(totalPendingBalance), icon: <ShoppingCart size={40} />, bg: 'bg-rose-500' },
+    { label: 'Customers CRM', value: customers.length.toString(), icon: <Users size={40} />, bg: 'bg-[#8b5cf6]' }
+  ];
 
   const topCards = [
     {
@@ -678,38 +710,205 @@ const AdminDashboard = () => {
                       <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-right">Lifetime Value</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {customers.slice(0, 10).map((c, i) => (
-                      <tr key={c.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="pl-4 pr-2 py-2">
-                          <span className="text-[10px] font-black text-slate-300">{(i + 1).toString().padStart(2, '0')}</span>
-                        </td>
-                        <td className="px-4 py-2">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">
-                              {c.name.charAt(0)}
-                            </div>
-                            <div>
-                              <p className="text-[13px] font-bold text-slate-800">{c.name}</p>
-                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{c.id}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-2">
-                          <p className="text-[12px] font-medium text-slate-600">{c.phone}</p>
-                        </td>
-                        <td className="px-4 py-2">
-                          <p className="text-[12px] font-medium text-slate-600">{c.lastOrder !== '-' ? new Date(c.lastOrder).toLocaleDateString() : 'N/A'}</p>
-                        </td>
-                        <td className="px-4 py-2 text-right">
-                          <p className="text-[13px] font-black text-slate-900">KSh {(c.totalSpent || 0).toLocaleString()}</p>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          {/* ========================================================= */}
+          {/*                 TAILORING & CUSTOMERS                     */}
+          {/* ========================================================= */}
+          
+          <div className="mt-10 mb-6 flex items-center justify-center gap-4">
+            <div className="h-[1px] flex-1 bg-slate-200"></div>
+            <h2 className="text-sm font-black text-slate-800 uppercase tracking-[0.2em] px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm flex items-center gap-2">
+              <Scissors size={16} className="text-indigo-500" />
+              Tailoring & Customers
+            </h2>
+            <div className="h-[1px] flex-1 bg-slate-200"></div>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6 shrink-0 scroll-mt-24">
+            {tailoringCards.map((card, i) => (
+              <div key={i} className={`${card.bg} rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-md relative overflow-hidden flex flex-col justify-between h-24 sm:h-32 transform transition-transform hover:-translate-y-1`}>
+                <div className="relative z-10">
+                  <h3 className="text-lg sm:text-3xl font-black mb-0.5 sm:mb-1 drop-shadow-sm leading-tight">{card.value}</h3>
+                  <p className="text-[10px] sm:text-sm font-medium opacity-90">{card.label}</p>
+                </div>
+                <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 opacity-20 scale-75 sm:scale-100 origin-right">
+                  {card.icon}
+                </div>
+                <div className="absolute -right-4 -top-8 w-24 h-24 sm:w-32 sm:h-32 bg-white opacity-10 rounded-full blur-2xl" />
               </div>
-            )}
+            ))}
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6 shrink-0">
+            {/* Tailoring Trend */}
+            <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-6">
+              <h3 className="text-sm font-bold text-slate-800 mb-4 sm:mb-6 flex items-center gap-2">
+                <BarChart2 size={18} className="text-indigo-500" />
+                Tailoring Revenue Trend
+              </h3>
+              {tailoringTrendData.length === 0 ? (
+                <div className="h-[200px] sm:h-[280px] flex items-center justify-center text-slate-400 text-sm bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                  No data in this date range
+                </div>
+              ) : (
+                <div className="h-[200px] sm:h-[280px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={tailoringTrendData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                      <XAxis dataKey="date" tickFormatter={(val) => typeof val === 'string' && val.length >= 10 ? val.slice(5) : val} axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }} dx={-10} tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
+                      <Tooltip 
+                        {...tooltipStyle} 
+                        labelStyle={{ fontWeight: 'bold', color: '#0f172a', marginBottom: '8px', borderBottom: '1px solid #f1f5f9', paddingBottom: '4px' }}
+                        formatter={(v, name) => [`KSh ${v.toLocaleString()}`, name]} 
+                      />
+                      <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: 500, paddingTop: '10px' }} />
+                      <Line type="monotone" dataKey="revenue" name="Billed Revenue" stroke="#8b5cf6" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="collected" name="Cash Collected" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="pending" name="Pending Balances" stroke="#ef4444" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+
+            {/* Top Services */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-6">
+              <h3 className="text-sm font-bold text-slate-800 mb-4 sm:mb-6 flex items-center gap-2">
+                <PieChartIcon size={18} className="text-emerald-500" />
+                Top Services by Revenue
+              </h3>
+              {topServices.length === 0 ? (
+                <div className="h-[200px] sm:h-[280px] flex items-center justify-center text-slate-400 text-sm bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                  No data
+                </div>
+              ) : (
+                <div className="h-[200px] sm:h-[280px] relative">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={topServices}
+                        cx="50%" cy="45%"
+                        innerRadius={60} outerRadius={85}
+                        paddingAngle={5}
+                        dataKey="revenue"
+                        nameKey="name"
+                      >
+                        {topServices.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={BAR_COLORS[index % BAR_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip {...tooltipStyle} formatter={(v) => [`KSh ${v.toLocaleString()}`, 'Revenue']} />
+                      <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '11px', fontWeight: 500 }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 flex-1 min-h-0 pb-4">
+            {/* Recent Tailoring Orders */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-[300px]">
+              <div className="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between shrink-0">
+                <h3 className="text-sm font-bold text-slate-800">Recent Tailoring Orders</h3>
+              </div>
+              {tailoringOrders.length === 0 ? (
+                <div className="p-10 text-center text-slate-400 text-sm flex-1">No orders yet</div>
+              ) : (
+                <div className="flex-1 overflow-auto p-2">
+                  <table className="w-full text-left border-collapse min-w-[360px]">
+                    <thead>
+                      <tr>
+                        <th className="pl-4 pr-2 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 w-8">#</th>
+                        <th className="px-2 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Client & Service</th>
+                        <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-right">Value</th>
+                        <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-right">Balance</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {tailoringOrders.slice(0, 30).map((order, i) => (
+                        <tr key={order.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="pl-4 pr-2 py-1.5">
+                            <span className="text-[10px] font-black text-slate-300">{(i + 1).toString().padStart(2, '0')}</span>
+                          </td>
+                          <td className="px-2 py-1.5">
+                            <p className="text-[13px] font-semibold text-slate-700 truncate max-w-[160px] leading-tight">{order.customer}</p>
+                            <p className="text-[9px] font-medium text-slate-400 mt-0.5 tracking-wide">{order.type} • {order.timestamp ? new Date(order.timestamp).toLocaleDateString() : 'N/A'}</p>
+                          </td>
+                          <td className="px-4 py-1.5 text-right">
+                            <p className="text-[12px] font-bold text-slate-800">KSh {(order.amount || 0).toLocaleString()}</p>
+                          </td>
+                          <td className="px-4 py-1.5 text-right">
+                            {order.balance > 0 ? (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-rose-50 text-rose-600">
+                                KSh {order.balance.toLocaleString()}
+                              </span>
+                            ) : (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-600">
+                                CLEARED
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Customers Table (Pre-existing) */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-[300px]">
+              <div className="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between shrink-0 gap-3">
+                <h3 className="text-sm font-bold text-slate-800">Top Customers (CRM)</h3>
+              </div>
+              {customers.length === 0 ? (
+                <div className="p-10 text-center text-slate-400 text-sm flex-1">No customers yet</div>
+              ) : (
+                <div className="flex-1 overflow-auto p-2">
+                  <table className="w-full text-left border-collapse min-w-[500px]">
+                    <thead>
+                      <tr>
+                        <th className="pl-4 pr-2 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 w-8">#</th>
+                        <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Client Details</th>
+                        <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Contact</th>
+                        <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0">Last Visit</th>
+                        <th className="px-4 py-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-white sticky top-0 text-right">LTV (Spent)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {customers.slice(0, 30).map((c, i) => (
+                        <tr key={c.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="pl-4 pr-2 py-2">
+                            <span className="text-[10px] font-black text-slate-300">{(i + 1).toString().padStart(2, '0')}</span>
+                          </td>
+                          <td className="px-4 py-2">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">
+                                {c.name.charAt(0)}
+                              </div>
+                              <div>
+                                <p className="text-[13px] font-bold text-slate-800">{c.name}</p>
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{c.id}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-2">
+                            <p className="text-[12px] font-medium text-slate-600">{c.phone}</p>
+                          </td>
+                          <td className="px-4 py-2">
+                            <p className="text-[12px] font-medium text-slate-600">{c.lastOrder !== '-' && c.lastOrder ? new Date(c.lastOrder).toLocaleDateString() : 'N/A'}</p>
+                          </td>
+                          <td className="px-4 py-2 text-right">
+                            <p className="text-[13px] font-black text-slate-900">KSh {(c.totalSpent || 0).toLocaleString()}</p>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
         </main>
     </div>
