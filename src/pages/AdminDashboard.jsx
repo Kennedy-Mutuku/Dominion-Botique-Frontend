@@ -336,37 +336,37 @@ const AdminDashboard = () => {
 
   const tailoringCards = [
     { label: 'Tailoring Revenue', value: fmt(tailoringEarnedRevenue), icon: <Scissors size={40} />, bg: 'bg-indigo-500' },
-    { label: 'Total Profit', value: fmt(tailoringTotalProfit), icon: <TrendingUp size={40} />, bg: 'bg-amber-500' },
-    { label: 'Cash Collected', value: fmt(tailoringCashCollected), icon: <DollarSign size={40} />, bg: 'bg-emerald-500' },
-    { label: 'Pending Balances', value: fmt(totalPendingBalance), icon: <ShoppingCart size={40} />, bg: 'bg-rose-500' },
-    { label: 'Customers CRM', value: customers.length.toString(), icon: <Users size={40} />, bg: 'bg-[#8b5cf6]' }
+    { label: 'Tailoring Profit', value: fmt(tailoringTotalProfit), icon: <TrendingUp size={40} />, bg: 'bg-amber-500' },
+    { label: 'Cash Collected (Tailoring)', value: fmt(tailoringCashCollected), icon: <DollarSign size={40} />, bg: 'bg-emerald-500' },
+    { label: 'Pending Payments', value: fmt(totalPendingBalance), icon: <ShoppingCart size={40} />, bg: 'bg-rose-500' },
+    { label: 'Total Customers', value: customers.length.toString(), icon: <Users size={40} />, bg: 'bg-[#8b5cf6]' }
   ];
 
   const combinedNetProfit = totalProfit + tailoringTotalProfit;
 
   const topCards = [
     {
-      label: 'Earned Revenue', value: fmt(totalEarnedRevenue),
+      label: 'Total Sales (Boutique)', value: fmt(totalEarnedRevenue),
       icon: <DollarSign size={40} />,
       bg: 'bg-[#3b82f6]', // Blue
     },
     {
-      label: 'Cash Collected', value: fmt(totalCashCollected),
+      label: 'Cash in Hand (Boutique)', value: fmt(totalCashCollected),
       icon: <DollarSign size={40} />,
       bg: 'bg-[#10b981]', // Green
     },
     {
-      label: 'Stock Value', value: fmt(stockValue),
+      label: 'Value of Current Stock', value: fmt(stockValue),
       icon: <Package size={40} />,
       bg: 'bg-[#8b5cf6]', // Purple
     },
     {
-      label: 'Total Profit', value: fmt(totalProfit),
+      label: 'Boutique Only Profit', value: fmt(totalProfit),
       icon: profitPositive ? <TrendingUp size={40} /> : <TrendingDown size={40} />,
       bg: 'bg-slate-900', // Dark
     },
     {
-      label: 'Combined Net Profit', value: fmt(combinedNetProfit),
+      label: 'Total Profit (Boutique + Tailoring)', value: fmt(combinedNetProfit),
       icon: combinedNetProfit >= 0 ? <TrendingUp size={40} /> : <TrendingDown size={40} />,
       bg: 'bg-rose-500', // Rose
     }
